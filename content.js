@@ -114,7 +114,7 @@ async function fetchSolvedData(problemId, langId) {
   if (langId) baseUrl += `&language_id=${langId}`;
   let nextUrl = baseUrl;
   let pageCount = 0;
-  while (nextUrl && pageCount < 5) {
+  while (nextUrl && pageCount < 6) {
     try {
       const res = await fetch(nextUrl);
       const doc = new DOMParser().parseFromString(
