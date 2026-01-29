@@ -6,28 +6,12 @@
 #boj-performance-graph-container {
   width: 100%;
   max-width: 900px;
-  margin: 0px auto 20px auto;
+  /* 상단 여백을 살짝 주어 테이블과 분리 */
+  margin: 10px auto 20px auto;
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
     sans-serif;
   background: transparent;
-}
-
-.chart-controls {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 12px;
-}
-
-.lang-select {
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: 1px solid #d9d9d9;
-  background-color: #fff;
-  font-size: 14px;
-  color: #262626;
-  cursor: pointer;
-  font-weight: 500;
 }
 
 .charts-row {

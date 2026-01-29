@@ -1,16 +1,3 @@
-// 언어 그룹 아이디
-const LANGUAGES = {
-  전체: "",
-  "C++": "1001",
-  C: "1004",
-  Java: "1002",
-  "Python 3": "28",
-  PyPy3: "73",
-  Rust: "1005",
-  "Node.js": "17",
-  Kotlin: "69",
-};
-
 let chartInstances = { time: null, memory: null };
 
 async function main() {
@@ -22,18 +9,18 @@ async function main() {
   // UI 주입
   const ui = injectGraphContainer();
   if (!ui) return;
-  const { langSelect, timeCard, memoryCard } = ui;
+  const { timeCard, memoryCard } = ui;
 
   // 내 기록 조회
-  let currentLangId = "";
   let myRecord = null;
-
+  const currentLangId = params.get("language_id") || "";
   const myId = getLoginId();
   if (myId) {
     updateCardLoading(timeCard, "내 기록 조회 중...");
     updateCardLoading(memoryCard, "내 기록 조회 중...");
 
-    myRecord = await fetchMyBestSubmission(problemId, myId);
+    // 현재 언어 필터에 맞는 내 기록 조회
+    myRecord = await fetchMyBestSubmission(problemId, myId, currentLangId);
   }
 
   // 데이터 불러오고 그리기
@@ -59,12 +46,6 @@ async function main() {
     const memoryData = processData(submissions, "memory", myRecord);
     const memoryStats = calculatePercentile(submissions, "memory", myRecord);
     drawChart(memoryCard, memoryData, "memory", myRecord, memoryStats);
-  };
-
-  // 언어 선택 변경 시 다시 불러오기
-  langSelect.onchange = (e) => {
-    currentLangId = e.target.value;
-    loadAndDraw();
   };
 
   // 초기 로드
@@ -94,23 +75,7 @@ function injectGraphContainer() {
     else return null;
   }
 
-  // 언어 그룹 선택 UI
-  const controls = document.createElement("div");
-  controls.className = "chart-controls";
-
-  const langSelect = document.createElement("select");
-  langSelect.className = "lang-select";
-
-  Object.keys(LANGUAGES).forEach((name) => {
-    const opt = document.createElement("option");
-    opt.value = LANGUAGES[name];
-    opt.innerText = name;
-    langSelect.appendChild(opt);
-  });
-  controls.appendChild(langSelect);
-  container.appendChild(controls);
-
-  // 차트 카드
+  // 차트 카드 영역
   const chartsRow = document.createElement("div");
   chartsRow.className = "charts-row";
 
@@ -121,7 +86,7 @@ function injectGraphContainer() {
   chartsRow.appendChild(memoryCard);
   container.appendChild(chartsRow);
 
-  return { langSelect, timeCard, memoryCard };
+  return { timeCard, memoryCard };
 }
 
 // 카드 생성 함수
@@ -184,34 +149,32 @@ function getLoginId() {
   return user ? user.innerText.trim() : null;
 }
 
-// 내 최고 기록 불러오기 함수
-async function fetchMyBestSubmission(problemId, userId) {
-  const url = `https://www.acmicpc.net/status?problem_id=${problemId}&user_id=${userId}&result_id=4`;
+// 내 최고 기록 불러오기 함수 (시간 -> 메모리 순 정렬)
+async function fetchMyBestSubmission(problemId, userId, langId) {
+  let url = `https://www.acmicpc.net/status?problem_id=${problemId}&user_id=${userId}&result_id=4`;
+  if (langId) {
+    url += `&language_id=${langId}`;
+  }
+
   try {
     const res = await fetch(url);
     const doc = new DOMParser().parseFromString(await res.text(), "text/html");
     const rows = doc.querySelectorAll("#status-table tbody tr");
     let best = null;
-    const sortedLangKeys = Object.keys(LANGUAGES).sort(
-      (a, b) => b.length - a.length,
-    );
 
     rows.forEach((row) => {
       const cols = row.querySelectorAll("td");
       if (cols.length > 6) {
         const memory = parseInt(cols[4].innerText);
         const time = parseInt(cols[5].innerText);
-        const langText = cols[6].innerText.trim();
+
         if (!isNaN(memory) && !isNaN(time)) {
-          if (!best || time < best.time) {
-            let matchedId = null;
-            for (const key of sortedLangKeys) {
-              if (key !== "전체" && langText.includes(key)) {
-                matchedId = LANGUAGES[key];
-                break;
-              }
-            }
-            best = { time, memory, languageId: matchedId };
+          if (
+            !best ||
+            time < best.time ||
+            (time === best.time && memory < best.memory)
+          ) {
+            best = { time, memory };
           }
         }
       }
@@ -238,7 +201,6 @@ function processData(submissions, type, myRecord) {
   const sorted = Object.keys(freq)
     .map(Number)
     .sort((a, b) => a - b);
-
   return {
     labels: sorted.map((v) => (type === "time" ? `${v}ms` : `${v}KB`)),
     data: sorted.map((v) => freq[v]),
