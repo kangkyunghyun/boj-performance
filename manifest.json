@@ -8,7 +8,7 @@
   "content_scripts": [
     {
       "matches": ["https://www.acmicpc.net/status*"],
-      "js": ["content.js"],
+      "js": ["chart.js", "content.js"],
       "css": ["style.css"]
     }
   ]
