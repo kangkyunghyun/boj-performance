@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "BOJ Performance",
+  "version": "1.0",
+  "description": "백준 채점 결과에 런타임/메모리 그래프를 추가합니다.",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["https://www.acmicpc.net/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.acmicpc.net/status*"],
+      "js": ["content.js"],
+      "css": ["style.css"]
+    }
+  ]
+}
