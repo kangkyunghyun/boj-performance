@@ -4,41 +4,100 @@ async function main() {
 
   if (!problemId) return;
 
-  console.log(`BOJ Performance: ${problemId}번 문제 분석 시작`);
+  const ui = injectGraphContainer();
+  if (!ui) return;
 
-  const container = injectGraphContainer();
+  const { container, btnTime, btnMemory, chartWrapper } = ui;
+
+  chartWrapper.innerHTML =
+    '<div style="padding: 40px; text-align: center; color: #666;">데이터를 불러오는 중입니다... </div>';
+
+  const submissions = await fetchSolvedData(problemId);
+
+  if (submissions.length === 0) {
+    chartWrapper.innerHTML =
+      '<div style="padding: 20px; text-align: center; color: red;">데이터 로딩 실패</div>';
+    return;
+  }
+
+  const updateGraph = (type) => {
+    if (type === "time") {
+      btnTime.classList.add("active");
+      btnMemory.classList.remove("active");
+    } else {
+      btnTime.classList.remove("active");
+      btnMemory.classList.add("active");
+    }
+
+    const processedData = processData(submissions, type);
+    drawChart(chartWrapper, processedData, type);
+  };
+
+  btnTime.onclick = () => updateGraph("time");
+  btnMemory.onclick = () => updateGraph("memory");
+
+  updateGraph("time");
+}
+
+function injectGraphContainer() {
+  let container = document.getElementById("boj-performance-container");
 
   if (container) {
-    const loadingMsg = document.createElement("div");
-    loadingMsg.innerText = "데이터를 불러오는 중입니다... (약 2~3초 소요)";
-    loadingMsg.style.textAlign = "center";
-    loadingMsg.style.color = "#666";
-    container.appendChild(loadingMsg);
+    container.innerHTML = "";
+  } else {
+    container = document.createElement("div");
+    container.id = "boj-performance-container";
 
-    const submissions = await fetchSolvedData(problemId);
+    container.style.width = "100%";
+    container.style.maxWidth = "800px";
+    container.style.margin = "20px auto";
+    container.style.backgroundColor = "#fff";
+    container.style.padding = "15px";
+    container.style.border = "1px solid #ddd";
+    container.style.borderRadius = "8px";
 
-    loadingMsg.remove();
-
-    if (submissions.length > 0) {
-      const processedData = processTimeData(submissions);
-      drawChart(container, processedData);
+    const targetElement = document.querySelector(".table-responsive");
+    if (targetElement) {
+      targetElement.parentNode.insertBefore(container, targetElement);
     } else {
-      container.innerText = "데이터를 가져오는데 실패했습니다.";
+      return null;
     }
   }
+
+  const tabContainer = document.createElement("div");
+  tabContainer.style.marginBottom = "15px";
+  tabContainer.style.display = "flex";
+  tabContainer.style.gap = "10px";
+  tabContainer.style.justifyContent = "center";
+
+  const btnTime = document.createElement("button");
+  btnTime.innerText = "실행 시간";
+  btnTime.className = "boj-performance-btn active";
+
+  const btnMemory = document.createElement("button");
+  btnMemory.innerText = "메모리";
+  btnMemory.className = "boj-performance-btn";
+
+  tabContainer.appendChild(btnTime);
+  tabContainer.appendChild(btnMemory);
+  container.appendChild(tabContainer);
+
+  const chartWrapper = document.createElement("div");
+  chartWrapper.id = "chart-wrapper";
+  chartWrapper.style.minHeight = "300px";
+  container.appendChild(chartWrapper);
+
+  return { container, btnTime, btnMemory, chartWrapper };
 }
 
 async function fetchSolvedData(problemId) {
   let data = [];
   let nextUrl = `https://www.acmicpc.net/status?problem_id=${problemId}&result_id=4`;
-
   const MAX_PAGES = 5;
   let pageCount = 0;
 
   try {
     while (nextUrl && pageCount < MAX_PAGES) {
-      console.log(`데이터 수집 중... (${pageCount + 1}/${MAX_PAGES})`);
-
       const response = await fetch(nextUrl);
       const text = await response.text();
       const parser = new DOMParser();
@@ -52,11 +111,8 @@ async function fetchSolvedData(problemId) {
           const resultText = cols[3].innerText.trim();
           if (!resultText.includes("맞았습니다")) return;
 
-          const memoryStr = cols[4].innerText.trim();
-          const timeStr = cols[5].innerText.trim();
-
-          const memory = parseInt(memoryStr);
-          const time = parseInt(timeStr);
+          const memory = parseInt(cols[4].innerText.trim());
+          const time = parseInt(cols[5].innerText.trim());
 
           if (!isNaN(memory) && !isNaN(time)) {
             data.push({ memory, time });
@@ -75,37 +131,61 @@ async function fetchSolvedData(problemId) {
       }
 
       pageCount++;
-
       await new Promise((r) => setTimeout(r, 200));
     }
-
     return data;
   } catch (error) {
-    console.error("데이터 수집 중 에러 발생:", error);
+    console.error("크롤링 에러:", error);
     return data;
   }
 }
 
-function drawChart(container, chartData) {
-  const existingCanvas = container.querySelector("canvas");
-  if (existingCanvas) existingCanvas.remove();
+function processData(submissions, type) {
+  const values = submissions.map((s) => s[type]);
+  const frequency = {};
 
+  values.forEach((v) => (frequency[v] = (frequency[v] || 0) + 1));
+
+  const sortedValues = Object.keys(frequency)
+    .map(Number)
+    .sort((a, b) => a - b);
+
+  const labels = sortedValues.map((v) =>
+    type === "time" ? `${v}ms` : `${v}KB`,
+  );
+  const data = sortedValues.map((v) => frequency[v]);
+
+  return { labels, data };
+}
+
+let myChart = null;
+
+function drawChart(wrapper, chartData, type) {
+  wrapper.innerHTML = "";
   const canvas = document.createElement("canvas");
-  canvas.id = "runtimeChart";
-  container.appendChild(canvas);
+  wrapper.appendChild(canvas);
 
   const ctx = canvas.getContext("2d");
 
-  new Chart(ctx, {
+  const titleText = type === "time" ? "런타임 분포" : "메모리 사용량 분포";
+  const color = "rgba(54, 162, 235, 0.6)";
+  const borderColor = "rgba(54, 162, 235, 1)";
+
+  if (myChart) {
+    myChart.destroy();
+    myChart = null;
+  }
+
+  myChart = new Chart(ctx, {
     type: "bar",
     data: {
       labels: chartData.labels,
       datasets: [
         {
-          label: "런타임 분포",
+          label: titleText,
           data: chartData.data,
-          backgroundColor: "rgba(54, 162, 235, 0.6)",
-          borderColor: "rgba(54, 162, 235, 1)",
+          backgroundColor: color,
+          borderColor: borderColor,
           borderWidth: 1,
           barPercentage: 0.9,
           categoryPercentage: 1.0,
@@ -114,70 +194,22 @@ function drawChart(container, chartData) {
     },
     options: {
       responsive: true,
+      animation: { duration: 500 },
       plugins: {
         legend: { display: false },
         title: {
           display: true,
-          text: `상위 ${chartData.data.reduce((a, b) => a + b, 0)}개의 제출 결과 분석 (런타임)`,
+          text: `최근 ${chartData.data.reduce((a, b) => a + b, 0)}개의 데이터 분석 (${titleText})`,
         },
       },
       scales: {
-        y: {
-          beginAtZero: true,
-          title: { display: true, text: "사람 수" },
-          ticks: {
-            stepSize: 1,
-          },
-        },
+        y: { beginAtZero: true, title: { display: true, text: "사람 수" } },
         x: {
-          title: { display: true, text: "실행 시간" },
+          title: { display: true, text: type === "time" ? "시간" : "메모리" },
         },
       },
     },
   });
-}
-
-function injectGraphContainer() {
-  if (document.getElementById("boj-performance-graph-container")) {
-    return document.getElementById("boj-performance-graph-container");
-  }
-
-  const container = document.createElement("div");
-  container.id = "boj-performance-graph-container";
-
-  container.style.width = "100%";
-  container.style.maxWidth = "800px";
-  container.style.margin = "20px auto";
-  container.style.backgroundColor = "#fff";
-  container.style.padding = "15px";
-  container.style.border = "1px solid #ddd";
-  container.style.borderRadius = "8px";
-
-  const loadingDiv = document.createElement("div");
-  container.appendChild(loadingDiv);
-
-  const targetElement = document.querySelector(".table-responsive");
-  if (targetElement) {
-    targetElement.parentNode.insertBefore(container, targetElement);
-    return container;
-  }
-  return null;
-}
-
-function processTimeData(submissions) {
-  const times = submissions.map((s) => s.time);
-
-  const frequency = {};
-  times.forEach((t) => (frequency[t] ? frequency[t]++ : (frequency[t] = 1)));
-
-  const sortedTimes = Object.keys(frequency)
-    .map(Number)
-    .sort((a, b) => a - b);
-
-  const labels = sortedTimes.map((t) => `${t}ms`); // X축 라벨
-  const data = sortedTimes.map((t) => frequency[t]); // Y축 데이터
-
-  return { labels, data };
 }
 
 main();
