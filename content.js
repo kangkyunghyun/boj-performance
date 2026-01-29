@@ -1,290 +1,337 @@
+// 언어 그룹 아이디
+const LANGUAGES = {
+  전체: "",
+  "C++": "1001",
+  C: "1004",
+  Java: "1002",
+  "Python 3": "28",
+  PyPy3: "73",
+  Rust: "1005",
+  "Node.js": "17",
+  Kotlin: "69",
+};
+
+let chartInstances = { time: null, memory: null };
+
 async function main() {
+  // 문제 내 채점 현황 페이지에서만 동작
   const params = new URLSearchParams(window.location.search);
   const problemId = params.get("problem_id");
   if (!problemId) return;
 
+  // UI 주입
   const ui = injectGraphContainer();
   if (!ui) return;
+  const { langSelect, timeCard, memoryCard } = ui;
 
-  const { container, btnTime, btnMemory, chartWrapper } = ui;
-
-  chartWrapper.innerHTML =
-    '<div style="padding: 40px; text-align: center; color: #666;">데이터를 불러오는 중입니다... </div>';
-
-  const submissions = await fetchSolvedData(problemId);
-
-  const myId = getLoginId();
+  // 내 기록 조회
+  let currentLangId = "";
   let myRecord = null;
 
+  const myId = getLoginId();
   if (myId) {
+    updateCardLoading(timeCard, "내 기록 조회 중...");
+    updateCardLoading(memoryCard, "내 기록 조회 중...");
+
     myRecord = await fetchMyBestSubmission(problemId, myId);
-    if (myRecord) {
-      console.log(
-        `내 기록 발견! 시간: ${myRecord.time}ms, 메모리: ${myRecord.memory}KB`,
-      );
-    }
   }
 
-  if (submissions.length === 0) {
-    chartWrapper.innerHTML =
-      '<div style="padding: 20px; text-align: center; color: red;">데이터 로딩 실패</div>';
-    return;
-  }
+  // 데이터 불러오고 그리기
+  const loadAndDraw = async () => {
+    updateCardLoading(timeCard, "분석 중...");
+    updateCardLoading(memoryCard, "분석 중...");
 
-  const updateGraph = (type) => {
-    if (type === "time") {
-      btnTime.classList.add("active");
-      btnMemory.classList.remove("active");
-    } else {
-      btnTime.classList.remove("active");
-      btnMemory.classList.add("active");
+    // 제출 데이터 불러오기
+    const submissions = await fetchSolvedData(problemId, currentLangId);
+
+    // 제출 데이터가 없으면 에러 표시
+    if (submissions.length === 0) {
+      updateCardError(timeCard);
+      updateCardError(memoryCard);
+      return;
     }
 
-    const processedData = processData(submissions, type);
-    drawChart(chartWrapper, processedData, type, myRecord);
+    // 시간/메모리 통계 계산 및 그리기
+    const timeData = processData(submissions, "time");
+    const timeStats = calculatePercentile(submissions, "time", myRecord);
+    drawChart(timeCard, timeData, "time", myRecord, timeStats);
+
+    const memoryData = processData(submissions, "memory");
+    const memoryStats = calculatePercentile(submissions, "memory", myRecord);
+    drawChart(memoryCard, memoryData, "memory", myRecord, memoryStats);
   };
 
-  btnTime.onclick = () => updateGraph("time");
-  btnMemory.onclick = () => updateGraph("memory");
+  // 언어 선택 변경 시 다시 불러오기
+  langSelect.onchange = (e) => {
+    currentLangId = e.target.value;
+    loadAndDraw();
+  };
 
-  updateGraph("time");
+  // 초기 로드
+  loadAndDraw();
 }
 
+// 백분위 계산 함수
+function calculatePercentile(submissions, type, myRecord) {
+  if (!myRecord) return null;
+  const myVal = myRecord[type];
+  const total = submissions.length;
+  const slowerCount = submissions.filter((s) => s[type] > myVal).length;
+  const percentile = (slowerCount / total) * 100;
+  return { val: myVal, beats: percentile.toFixed(2) };
+}
+
+// 그래프 컨테이너 주입 함수
 function injectGraphContainer() {
-  let container = document.getElementById("boj-performance-container");
-
-  if (container) {
-    container.innerHTML = "";
-  } else {
+  // 컨테이너 생성, 이미 존재하면 초기화
+  let container = document.getElementById("boj-performance-graph-container");
+  if (container) container.innerHTML = "";
+  else {
     container = document.createElement("div");
-    container.id = "boj-performance-container";
-
-    container.style.width = "100%";
-    container.style.maxWidth = "800px";
-    container.style.margin = "20px auto";
-    container.style.backgroundColor = "#fff";
-    container.style.padding = "15px";
-    container.style.border = "1px solid #ddd";
-    container.style.borderRadius = "8px";
-
-    const targetElement = document.querySelector(".table-responsive");
-    if (targetElement) {
-      targetElement.parentNode.insertBefore(container, targetElement);
-    } else {
-      return null;
-    }
+    container.id = "boj-performance-graph-container";
+    const target = document.querySelector(".table-responsive");
+    if (target) target.parentNode.insertBefore(container, target);
+    else return null;
   }
 
-  const tabContainer = document.createElement("div");
-  tabContainer.style.marginBottom = "15px";
-  tabContainer.style.display = "flex";
-  tabContainer.style.gap = "10px";
-  tabContainer.style.justifyContent = "center";
+  // 언어 그룹 선택 UI
+  const controls = document.createElement("div");
+  controls.className = "chart-controls";
 
-  const btnTime = document.createElement("button");
-  btnTime.innerText = "실행 시간";
-  btnTime.className = "boj-performance-btn active";
+  const langSelect = document.createElement("select");
+  langSelect.className = "lang-select";
 
-  const btnMemory = document.createElement("button");
-  btnMemory.innerText = "메모리";
-  btnMemory.className = "boj-performance-btn";
+  Object.keys(LANGUAGES).forEach((name) => {
+    const opt = document.createElement("option");
+    opt.value = LANGUAGES[name];
+    opt.innerText = name;
+    langSelect.appendChild(opt);
+  });
+  controls.appendChild(langSelect);
+  container.appendChild(controls);
 
-  tabContainer.appendChild(btnTime);
-  tabContainer.appendChild(btnMemory);
-  container.appendChild(tabContainer);
+  // 차트 카드
+  const chartsRow = document.createElement("div");
+  chartsRow.className = "charts-row";
 
-  const chartWrapper = document.createElement("div");
-  chartWrapper.id = "chart-wrapper";
-  chartWrapper.style.minHeight = "300px";
-  container.appendChild(chartWrapper);
+  const timeCard = createCardElement("Runtime (시간)", "time-card");
+  const memoryCard = createCardElement("Memory (메모리)", "memory-card");
 
-  return { container, btnTime, btnMemory, chartWrapper };
+  chartsRow.appendChild(timeCard);
+  chartsRow.appendChild(memoryCard);
+  container.appendChild(chartsRow);
+
+  return { langSelect, timeCard, memoryCard };
 }
 
-async function fetchSolvedData(problemId) {
+// 카드 생성 함수
+function createCardElement(title, id) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.id = id;
+  card.innerHTML = `
+    <div class="card-header">
+        <div class="card-title">${title}</div>
+        <div class="stat-area">
+            <div class="card-stat-big">-</div>
+            <div class="card-stat-sub">...</div>
+        </div>
+    </div>
+    <div class="canvas-wrapper"></div>
+  `;
+  return card;
+}
+
+// 제출 데이터 불러오기 함수
+async function fetchSolvedData(problemId, langId) {
   let data = [];
-  let nextUrl = `https://www.acmicpc.net/status?problem_id=${problemId}&result_id=4`;
-  const MAX_PAGES = 5;
+  let baseUrl = `https://www.acmicpc.net/status?problem_id=${problemId}&result_id=4`;
+  if (langId) baseUrl += `&language_id=${langId}`;
+  let nextUrl = baseUrl;
   let pageCount = 0;
-
-  try {
-    while (nextUrl && pageCount < MAX_PAGES) {
-      const response = await fetch(nextUrl);
-      const text = await response.text();
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(text, "text/html");
-
+  while (nextUrl && pageCount < 5) {
+    try {
+      const res = await fetch(nextUrl);
+      const doc = new DOMParser().parseFromString(
+        await res.text(),
+        "text/html",
+      );
       const rows = doc.querySelectorAll("#status-table tbody tr");
-
       rows.forEach((row) => {
         const cols = row.querySelectorAll("td");
         if (cols.length > 5) {
-          const resultText = cols[3].innerText.trim();
-          if (!resultText.includes("맞았습니다")) return;
-
-          const memory = parseInt(cols[4].innerText.trim());
-          const time = parseInt(cols[5].innerText.trim());
-
-          if (!isNaN(memory) && !isNaN(time)) {
-            data.push({ memory, time });
-          }
+          const memory = parseInt(cols[4].innerText);
+          const time = parseInt(cols[5].innerText);
+          if (!isNaN(memory) && !isNaN(time)) data.push({ memory, time });
         }
       });
-
-      const nextButton = doc.querySelector("#next_page");
-      if (nextButton) {
-        nextUrl = nextButton.getAttribute("href");
-        if (nextUrl && !nextUrl.startsWith("http")) {
-          nextUrl = `https://www.acmicpc.net${nextUrl}`;
-        }
-      } else {
-        nextUrl = null;
-      }
-
+      const nextBtn = doc.querySelector("#next_page");
+      nextUrl = nextBtn ? nextBtn.getAttribute("href") : null;
+      if (nextUrl && !nextUrl.startsWith("http"))
+        nextUrl = `https://www.acmicpc.net${nextUrl}`;
       pageCount++;
-      await new Promise((r) => setTimeout(r, 200));
+      await new Promise((r) => setTimeout(r, 60));
+    } catch (e) {
+      break;
     }
-    return data;
-  } catch (error) {
-    console.error("크롤링 에러:", error);
-    return data;
+  }
+  return data;
+}
+
+// 로그인 아이디 가져오기 함수
+function getLoginId() {
+  const user = document.querySelector(".loginbar .username");
+  return user ? user.innerText.trim() : null;
+}
+
+// 내 최고 기록 불러오기 함수
+async function fetchMyBestSubmission(problemId, userId) {
+  const url = `https://www.acmicpc.net/status?problem_id=${problemId}&user_id=${userId}&result_id=4`;
+  try {
+    const res = await fetch(url);
+    const doc = new DOMParser().parseFromString(await res.text(), "text/html");
+    const rows = doc.querySelectorAll("#status-table tbody tr");
+    let best = null;
+    const sortedLangKeys = Object.keys(LANGUAGES).sort(
+      (a, b) => b.length - a.length,
+    );
+
+    rows.forEach((row) => {
+      const cols = row.querySelectorAll("td");
+      if (cols.length > 6) {
+        const memory = parseInt(cols[4].innerText);
+        const time = parseInt(cols[5].innerText);
+        const langText = cols[6].innerText.trim();
+        if (!isNaN(memory) && !isNaN(time)) {
+          if (!best || time < best.time) {
+            let matchedId = null;
+            for (const key of sortedLangKeys) {
+              if (key !== "전체" && langText.includes(key)) {
+                matchedId = LANGUAGES[key];
+                break;
+              }
+            }
+            best = { time, memory, languageId: matchedId };
+          }
+        }
+      }
+    });
+    return best;
+  } catch (e) {
+    return null;
   }
 }
 
+// 데이터 처리 함수
 function processData(submissions, type) {
   const values = submissions.map((s) => s[type]);
-  const frequency = {};
-
-  values.forEach((v) => (frequency[v] = (frequency[v] || 0) + 1));
-
-  const sortedValues = Object.keys(frequency)
+  const freq = {};
+  values.forEach((v) => (freq[v] = (freq[v] || 0) + 1));
+  const sorted = Object.keys(freq)
     .map(Number)
     .sort((a, b) => a - b);
-
-  const labels = sortedValues.map((v) =>
-    type === "time" ? `${v}ms` : `${v}KB`,
-  );
-  const data = sortedValues.map((v) => frequency[v]);
-
-  return { labels, data };
+  return {
+    labels: sorted.map((v) => (type === "time" ? `${v}ms` : `${v}KB`)),
+    data: sorted.map((v) => freq[v]),
+  };
 }
 
-let myChart = null;
+// 카드 상태 업데이트 함수
+function updateCardLoading(card, msg) {
+  card.querySelector(".stat-area").innerHTML =
+    `<div class="card-stat-sub">${msg}</div>`;
+}
 
-// myRecord 인자 추가 (내 기록 객체: { time: 100, memory: 2048 } 또는 null)
-function drawChart(wrapper, chartData, type, myRecord) {
+// 카드 에러 표시 함수
+function updateCardError(card) {
+  card.querySelector(".stat-area").innerHTML =
+    `<div class="card-stat-sub" style="color:red">데이터 부족</div>`;
+}
+
+// 그래프 그리기 함수
+function drawChart(card, chartData, type, myRecord, stats) {
+  const statArea = card.querySelector(".stat-area");
+  const unit = type === "time" ? "ms" : "KB";
+
+  // 상단 정보
+  if (myRecord) {
+    statArea.innerHTML = `
+        <div class="card-stat-big">${stats.val} ${unit}</div>
+        <div class="card-stat-sub">
+            Beats <span class="beats-highlight">${stats.beats}%</span> of users
+        </div>
+      `;
+  } else {
+    statArea.innerHTML = `
+        <div class="card-stat-big">-</div>
+        <div class="card-stat-sub">내 기록 없음</div>
+      `;
+  }
+
+  // 그래프
+  const wrapper = card.querySelector(".canvas-wrapper");
   wrapper.innerHTML = "";
   const canvas = document.createElement("canvas");
   wrapper.appendChild(canvas);
-
   const ctx = canvas.getContext("2d");
 
-  const titleText = type === "time" ? "런타임 분포" : "메모리 사용량 분포";
+  const barColor = "#cfcfcf";
+  const myColor = "#262626";
 
-  const defaultColor = "rgba(206, 206, 206, 0.68)";
-  const highlightColor = "rgba(54, 162, 235, 0.6)";
-
-  const backgroundColors = chartData.labels.map((label) => {
-    if (!myRecord) return defaultColor;
-
-    const labelValue = parseInt(label.replace(/[^0-9]/g, ""));
-
-    const myValue = myRecord[type];
-
-    if (labelValue === myValue) {
-      return highlightColor;
-    }
-    return defaultColor;
+  const bgColors = chartData.labels.map((l) => {
+    const val = parseInt(l.replace(/[^0-9]/g, ""));
+    return myRecord && val === myRecord[type] ? myColor : barColor;
   });
 
-  const borderColors = backgroundColors.map((c) =>
-    c.replace("0.6", "1").replace("0.2", "1"),
-  );
+  if (chartInstances[type]) chartInstances[type].destroy();
 
-  if (myChart) {
-    myChart.destroy();
-    myChart = null;
-  }
-
-  myChart = new Chart(ctx, {
+  chartInstances[type] = new Chart(ctx, {
     type: "bar",
     data: {
       labels: chartData.labels,
       datasets: [
         {
-          label: titleText,
           data: chartData.data,
-          backgroundColor: backgroundColors,
-          borderColor: borderColors,
-          borderWidth: 1,
-          barPercentage: 0.9,
-          categoryPercentage: 1.0,
+          backgroundColor: bgColors,
+          minBarLength: 5,
+          borderRadius: 2,
+          barPercentage: 0.7,
+
+          hoverBackgroundColor: (ctx) => {
+            const val = parseInt(
+              chartData.labels[ctx.dataIndex].replace(/[^0-9]/g, ""),
+            );
+            return myRecord && val === myRecord[type] ? "#000000" : "#a0a0a0";
+          },
         },
       ],
     },
     options: {
       responsive: true,
-      animation: { duration: 500 },
+      maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        title: {
-          display: true,
-          text: `최근 ${chartData.data.reduce((a, b) => a + b, 0)}개의 데이터`,
+        tooltip: {
+          backgroundColor: "#333",
+          callbacks: { label: (c) => ` ${c.label}: ${c.raw}명` },
         },
       },
       scales: {
-        y: { beginAtZero: true, title: { display: true, text: "사람 수" } },
+        y: { display: false },
         x: {
-          title: { display: true, text: type === "time" ? "시간" : "메모리" },
+          grid: { display: false },
+          ticks: {
+            font: { size: 10 },
+            color: "#8c8c8c",
+            maxRotation: 0,
+            autoSkip: true,
+            maxTicksLimit: 6,
+          },
+          border: { display: false },
         },
       },
     },
   });
-}
-
-function getLoginId() {
-  const userElement = document.querySelector(".loginbar .username");
-  if (userElement) {
-    return userElement.innerText.trim();
-  }
-  return null;
-}
-
-async function fetchMyBestSubmission(problemId, userId) {
-  const url = `https://www.acmicpc.net/status?problem_id=${problemId}&user_id=${userId}&result_id=4`;
-
-  try {
-    const response = await fetch(url);
-    const text = await response.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, "text/html");
-
-    const rows = doc.querySelectorAll("#status-table tbody tr");
-
-    let minTime = Infinity;
-    let minMemory = Infinity;
-    let found = false;
-
-    rows.forEach((row) => {
-      const cols = row.querySelectorAll("td");
-      if (cols.length > 5) {
-        const memory = parseInt(cols[4].innerText.trim());
-        const time = parseInt(cols[5].innerText.trim());
-
-        if (!isNaN(memory) && !isNaN(time)) {
-          if (time < minTime) minTime = time;
-          if (memory < minMemory) minMemory = memory;
-          found = true;
-        }
-      }
-    });
-
-    if (found) return { time: minTime, memory: minMemory };
-    return null;
-  } catch (e) {
-    console.error("내 기록 조회 실패", e);
-    return null;
-  }
 }
 
 main();
