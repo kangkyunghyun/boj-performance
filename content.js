@@ -1,7 +1,6 @@
 async function main() {
   const params = new URLSearchParams(window.location.search);
   const problemId = params.get("problem_id");
-
   if (!problemId) return;
 
   const ui = injectGraphContainer();
@@ -13,6 +12,18 @@ async function main() {
     '<div style="padding: 40px; text-align: center; color: #666;">데이터를 불러오는 중입니다... </div>';
 
   const submissions = await fetchSolvedData(problemId);
+
+  const myId = getLoginId();
+  let myRecord = null;
+
+  if (myId) {
+    myRecord = await fetchMyBestSubmission(problemId, myId);
+    if (myRecord) {
+      console.log(
+        `내 기록 발견! 시간: ${myRecord.time}ms, 메모리: ${myRecord.memory}KB`,
+      );
+    }
+  }
 
   if (submissions.length === 0) {
     chartWrapper.innerHTML =
@@ -30,7 +41,7 @@ async function main() {
     }
 
     const processedData = processData(submissions, type);
-    drawChart(chartWrapper, processedData, type);
+    drawChart(chartWrapper, processedData, type, myRecord);
   };
 
   btnTime.onclick = () => updateGraph("time");
@@ -160,7 +171,8 @@ function processData(submissions, type) {
 
 let myChart = null;
 
-function drawChart(wrapper, chartData, type) {
+// myRecord 인자 추가 (내 기록 객체: { time: 100, memory: 2048 } 또는 null)
+function drawChart(wrapper, chartData, type, myRecord) {
   wrapper.innerHTML = "";
   const canvas = document.createElement("canvas");
   wrapper.appendChild(canvas);
@@ -168,8 +180,26 @@ function drawChart(wrapper, chartData, type) {
   const ctx = canvas.getContext("2d");
 
   const titleText = type === "time" ? "런타임 분포" : "메모리 사용량 분포";
-  const color = "rgba(54, 162, 235, 0.6)";
-  const borderColor = "rgba(54, 162, 235, 1)";
+
+  const defaultColor = "rgba(206, 206, 206, 0.68)";
+  const highlightColor = "rgba(54, 162, 235, 0.6)";
+
+  const backgroundColors = chartData.labels.map((label) => {
+    if (!myRecord) return defaultColor;
+
+    const labelValue = parseInt(label.replace(/[^0-9]/g, ""));
+
+    const myValue = myRecord[type];
+
+    if (labelValue === myValue) {
+      return highlightColor;
+    }
+    return defaultColor;
+  });
+
+  const borderColors = backgroundColors.map((c) =>
+    c.replace("0.6", "1").replace("0.2", "1"),
+  );
 
   if (myChart) {
     myChart.destroy();
@@ -184,8 +214,8 @@ function drawChart(wrapper, chartData, type) {
         {
           label: titleText,
           data: chartData.data,
-          backgroundColor: color,
-          borderColor: borderColor,
+          backgroundColor: backgroundColors,
+          borderColor: borderColors,
           borderWidth: 1,
           barPercentage: 0.9,
           categoryPercentage: 1.0,
@@ -199,7 +229,7 @@ function drawChart(wrapper, chartData, type) {
         legend: { display: false },
         title: {
           display: true,
-          text: `최근 ${chartData.data.reduce((a, b) => a + b, 0)}개의 데이터 분석 (${titleText})`,
+          text: `최근 ${chartData.data.reduce((a, b) => a + b, 0)}개의 데이터`,
         },
       },
       scales: {
@@ -210,6 +240,51 @@ function drawChart(wrapper, chartData, type) {
       },
     },
   });
+}
+
+function getLoginId() {
+  const userElement = document.querySelector(".loginbar .username");
+  if (userElement) {
+    return userElement.innerText.trim();
+  }
+  return null;
+}
+
+async function fetchMyBestSubmission(problemId, userId) {
+  const url = `https://www.acmicpc.net/status?problem_id=${problemId}&user_id=${userId}&result_id=4`;
+
+  try {
+    const response = await fetch(url);
+    const text = await response.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, "text/html");
+
+    const rows = doc.querySelectorAll("#status-table tbody tr");
+
+    let minTime = Infinity;
+    let minMemory = Infinity;
+    let found = false;
+
+    rows.forEach((row) => {
+      const cols = row.querySelectorAll("td");
+      if (cols.length > 5) {
+        const memory = parseInt(cols[4].innerText.trim());
+        const time = parseInt(cols[5].innerText.trim());
+
+        if (!isNaN(memory) && !isNaN(time)) {
+          if (time < minTime) minTime = time;
+          if (memory < minMemory) minMemory = memory;
+          found = true;
+        }
+      }
+    });
+
+    if (found) return { time: minTime, memory: minMemory };
+    return null;
+  } catch (e) {
+    console.error("내 기록 조회 실패", e);
+    return null;
+  }
 }
 
 main();
