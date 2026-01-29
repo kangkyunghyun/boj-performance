@@ -52,11 +52,11 @@ async function main() {
     }
 
     // 시간/메모리 통계 계산 및 그리기
-    const timeData = processData(submissions, "time");
+    const timeData = processData(submissions, "time", myRecord);
     const timeStats = calculatePercentile(submissions, "time", myRecord);
     drawChart(timeCard, timeData, "time", myRecord, timeStats);
 
-    const memoryData = processData(submissions, "memory");
+    const memoryData = processData(submissions, "memory", myRecord);
     const memoryStats = calculatePercentile(submissions, "memory", myRecord);
     drawChart(memoryCard, memoryData, "memory", myRecord, memoryStats);
   };
@@ -223,13 +223,22 @@ async function fetchMyBestSubmission(problemId, userId) {
 }
 
 // 데이터 처리 함수
-function processData(submissions, type) {
+function processData(submissions, type, myRecord) {
   const values = submissions.map((s) => s[type]);
   const freq = {};
   values.forEach((v) => (freq[v] = (freq[v] || 0) + 1));
+
+  if (myRecord) {
+    const myVal = myRecord[type];
+    if (!freq[myVal]) {
+      freq[myVal] = 1;
+    }
+  }
+
   const sorted = Object.keys(freq)
     .map(Number)
     .sort((a, b) => a - b);
+
   return {
     labels: sorted.map((v) => (type === "time" ? `${v}ms` : `${v}KB`)),
     data: sorted.map((v) => freq[v]),
