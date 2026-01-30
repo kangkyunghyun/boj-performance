@@ -66,7 +66,7 @@ function calculatePercentile(submissions, type, myRecord) {
   const total = submissions.length;
   const slowerCount = submissions.filter((s) => s[type] > myVal).length;
   const percentile = (slowerCount / total) * 100;
-  return { val: myVal, beats: percentile.toFixed(2) };
+  return { val: myVal, beats: percentile.toFixed(2), total: total };
 }
 
 // 그래프 컨테이너 주입 함수
@@ -236,7 +236,7 @@ function drawChart(card, chartData, type, myRecord, stats, currentLangId) {
     statArea.innerHTML = `
         <div class="card-stat-big">${stats.val} ${unit}</div>
         <div class="card-stat-sub">
-            Beats <span class="beats-highlight">${stats.beats}%</span> of users${getLanguageName(currentLangId) ? " in " + getLanguageName(currentLangId) : ""}
+            Beats <span class="beats-highlight">${stats.beats}%</span> of ${stats.total} users${getLanguageName(currentLangId) ? " in " + getLanguageName(currentLangId) : ""}
         </div>
       `;
   } else {
