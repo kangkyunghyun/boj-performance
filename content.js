@@ -41,11 +41,18 @@ async function main() {
     // 시간/메모리 통계 계산 및 그리기
     const timeData = processData(submissions, "time", myRecord);
     const timeStats = calculatePercentile(submissions, "time", myRecord);
-    drawChart(timeCard, timeData, "time", myRecord, timeStats);
+    drawChart(timeCard, timeData, "time", myRecord, timeStats, currentLangId);
 
     const memoryData = processData(submissions, "memory", myRecord);
     const memoryStats = calculatePercentile(submissions, "memory", myRecord);
-    drawChart(memoryCard, memoryData, "memory", myRecord, memoryStats);
+    drawChart(
+      memoryCard,
+      memoryData,
+      "memory",
+      myRecord,
+      memoryStats,
+      currentLangId,
+    );
   };
 
   // 초기 로드
@@ -220,7 +227,7 @@ function updateCardError(card) {
 }
 
 // 그래프 그리기 함수
-function drawChart(card, chartData, type, myRecord, stats) {
+function drawChart(card, chartData, type, myRecord, stats, currentLangId) {
   const statArea = card.querySelector(".stat-area");
   const unit = type === "time" ? "ms" : "KB";
 
@@ -229,7 +236,7 @@ function drawChart(card, chartData, type, myRecord, stats) {
     statArea.innerHTML = `
         <div class="card-stat-big">${stats.val} ${unit}</div>
         <div class="card-stat-sub">
-            Beats <span class="beats-highlight">${stats.beats}%</span> of users
+            Beats <span class="beats-highlight">${stats.beats}%</span> of users${getLanguageName(currentLangId) ? " in " + getLanguageName(currentLangId) : ""}
         </div>
       `;
   } else {
@@ -284,7 +291,7 @@ function drawChart(card, chartData, type, myRecord, stats) {
         legend: { display: false },
         tooltip: {
           backgroundColor: "#333",
-          callbacks: { label: (c) => ` ${c.label}: ${c.raw}명` },
+          callbacks: { label: (c) => ` ${c.raw}명` },
         },
       },
       scales: {
@@ -303,6 +310,20 @@ function drawChart(card, chartData, type, myRecord, stats) {
       },
     },
   });
+}
+
+// 선택된 언어 이름 조회 함수
+function getLanguageName(langId) {
+  if (!langId || langId === "-1") return null;
+
+  const selectBox = document.querySelector('select[name="language_id"]');
+  if (selectBox) {
+    const option = selectBox.querySelector(`option[value="${langId}"]`);
+    if (option) {
+      return option.innerText.trim();
+    }
+  }
+  return null;
 }
 
 main();
