@@ -86,8 +86,8 @@ function injectGraphContainer() {
   const chartsRow = document.createElement("div");
   chartsRow.className = "charts-row";
 
-  const timeCard = createCardElement("Runtime (시간)", "time-card");
-  const memoryCard = createCardElement("Memory (메모리)", "memory-card");
+  const timeCard = createCardElement("실행 시간", "time-card");
+  const memoryCard = createCardElement("메모리", "memory-card");
 
   chartsRow.appendChild(timeCard);
   chartsRow.appendChild(memoryCard);
@@ -121,7 +121,7 @@ async function fetchSolvedData(problemId, langId) {
   if (langId) baseUrl += `&language_id=${langId}`;
   let nextUrl = baseUrl;
   let pageCount = 0;
-  while (nextUrl && pageCount < 6) {
+  while (nextUrl && pageCount < 10) {
     try {
       const res = await fetch(nextUrl);
       const doc = new DOMParser().parseFromString(
@@ -142,7 +142,7 @@ async function fetchSolvedData(problemId, langId) {
       if (nextUrl && !nextUrl.startsWith("http"))
         nextUrl = `https://www.acmicpc.net${nextUrl}`;
       pageCount++;
-      await new Promise((r) => setTimeout(r, 60));
+      //   await new Promise((r) => setTimeout(r, 60));
     } catch (e) {
       break;
     }
@@ -231,18 +231,33 @@ function drawChart(card, chartData, type, myRecord, stats, currentLangId) {
   const statArea = card.querySelector(".stat-area");
   const unit = type === "time" ? "ms" : "KB";
 
-  // 상단 정보
+  const langName = getLanguageName(currentLangId);
+  const detailText = `최근 <span style="color:#4db8ff">${stats.total}</span>건의 제출 기준${langName ? `<br>(${langName})` : ""}`;
+
+  const infoIcon = `
+    <div class="tooltip-wrapper">
+        <svg viewBox="0 0 24 24" class="info-icon">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+        </svg>
+        <span class="tooltip-text">${detailText}</span>
+    </div>
+  `;
+
   if (myRecord) {
+    const topPercent = (100 - parseFloat(stats.beats)).toFixed(2);
+
     statArea.innerHTML = `
         <div class="card-stat-big">${stats.val} ${unit}</div>
         <div class="card-stat-sub">
-            Beats <span class="beats-highlight">${stats.beats}%</span> of ${stats.total} users${getLanguageName(currentLangId) ? " in " + getLanguageName(currentLangId) : ""}
+            상위 <span class="beats-highlight">${topPercent}%</span> ${infoIcon}
         </div>
       `;
   } else {
     statArea.innerHTML = `
         <div class="card-stat-big">-</div>
-        <div class="card-stat-sub">내 기록 없음</div>
+        <div class="card-stat-sub">
+            내 기록 없음 ${infoIcon}
+        </div>
       `;
   }
 
