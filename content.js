@@ -82,6 +82,13 @@ function injectGraphContainer() {
     else return null;
   }
 
+  // 다크 모드 감지 후 클래스 적용
+  if (isDarkMode()) {
+    container.classList.add("boj-graph-dark");
+  } else {
+    container.classList.remove("boj-graph-dark");
+  }
+
   // 차트 카드 영역
   const chartsRow = document.createElement("div");
   chartsRow.className = "charts-row";
@@ -261,15 +268,19 @@ function drawChart(card, chartData, type, myRecord, stats, currentLangId) {
       `;
   }
 
+  const dark = isDarkMode();
+
+  const barColor = dark ? "#444444" : "#cfcfcf";
+  const myColor = dark ? "#ffffff" : "#262626";
+  const hoverMyColor = dark ? "#e0e0e0" : "#000000";
+  const hoverBarColor = dark ? "#666666" : "#a0a0a0";
+
   // 그래프
   const wrapper = card.querySelector(".canvas-wrapper");
   wrapper.innerHTML = "";
   const canvas = document.createElement("canvas");
   wrapper.appendChild(canvas);
   const ctx = canvas.getContext("2d");
-
-  const barColor = "#cfcfcf";
-  const myColor = "#262626";
 
   const bgColors = chartData.labels.map((l) => {
     const val = parseInt(l.replace(/[^0-9]/g, ""));
@@ -294,7 +305,9 @@ function drawChart(card, chartData, type, myRecord, stats, currentLangId) {
             const val = parseInt(
               chartData.labels[ctx.dataIndex].replace(/[^0-9]/g, ""),
             );
-            return myRecord && val === myRecord[type] ? "#000000" : "#a0a0a0";
+            return myRecord && val === myRecord[type]
+              ? hoverMyColor
+              : hoverBarColor;
           },
         },
       ],
@@ -305,7 +318,7 @@ function drawChart(card, chartData, type, myRecord, stats, currentLangId) {
       plugins: {
         legend: { display: false },
         tooltip: {
-          backgroundColor: "#333",
+          backgroundColor: dark ? "#555" : "#333",
           callbacks: { label: (c) => ` ${c.raw}명` },
         },
       },
@@ -315,7 +328,7 @@ function drawChart(card, chartData, type, myRecord, stats, currentLangId) {
           grid: { display: false },
           ticks: {
             font: { size: 10 },
-            color: "#8c8c8c",
+            color: dark ? "#888" : "#8c8c8c",
             maxRotation: 0,
             autoSkip: true,
             maxTicksLimit: 6,
@@ -339,6 +352,21 @@ function getLanguageName(langId) {
     }
   }
   return null;
+}
+
+// 다크 모드 여부 확인 함수
+function isDarkMode() {
+  // boj-extended 확장 프로그램 설정 확인
+  const extendedTheme = localStorage.getItem("boj-extended-theme"); // 'dark' or 'light'
+
+  if (extendedTheme === "dark") return true;
+  if (extendedTheme === "light") return false;
+
+  // 설정이 없으면 브라우저/OS 시스템 설정 확인
+  return (
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
 }
 
 main();
