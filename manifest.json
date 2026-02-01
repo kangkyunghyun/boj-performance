@@ -1,9 +1,8 @@
 {
   "manifest_version": 3,
   "name": "BOJ Performance",
-  "version": "1.0",
-  "description": "백준 채점 결과에 런타임/메모리 그래프를 추가합니다.",
-  "permissions": ["activeTab", "scripting"],
+  "version": "1.0.0",
+  "description": "백준 온라인 저지(BOJ) 채점 현황에 내 코드의 성능(시간, 메모리) 위치를 그래프로 시각화합니다.",
   "host_permissions": ["https://www.acmicpc.net/*"],
   "content_scripts": [
     {
@@ -11,5 +10,10 @@
       "js": ["chart.js", "content.js"],
       "css": ["style.css"]
     }
-  ]
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
 }
