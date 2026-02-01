@@ -61,9 +61,9 @@ async function main() {
 
 // 백분위 계산 함수
 function calculatePercentile(submissions, type, myRecord) {
-  if (!myRecord) return null;
-  const myVal = myRecord[type];
   const total = submissions.length;
+  if (!myRecord) return { val: null, beats: null, total: total };
+  const myVal = myRecord[type];
   const slowerCount = submissions.filter((s) => s[type] > myVal).length;
   const percentile = (slowerCount / total) * 100;
   return { val: myVal, beats: percentile.toFixed(2), total: total };
