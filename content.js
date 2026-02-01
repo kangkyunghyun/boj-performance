@@ -62,11 +62,11 @@ async function main() {
 // 백분위 계산 함수
 function calculatePercentile(submissions, type, myRecord) {
   const total = submissions.length;
-  if (!myRecord) return { val: null, beats: null, total: total };
+  if (!myRecord) return { val: null, top: null, total: total };
   const myVal = myRecord[type];
-  const slowerCount = submissions.filter((s) => s[type] > myVal).length;
-  const percentile = (slowerCount / total) * 100;
-  return { val: myVal, beats: percentile.toFixed(2), total: total };
+  const fasterCount = submissions.filter((s) => s[type] < myVal).length;
+  const topPercent = ((fasterCount + 1) / total) * 100;
+  return { val: myVal, top: topPercent.toFixed(2), total: total };
 }
 
 // 그래프 컨테이너 주입 함수
@@ -251,12 +251,10 @@ function drawChart(card, chartData, type, myRecord, stats, currentLangId) {
   `;
 
   if (myRecord) {
-    const topPercent = (100 - parseFloat(stats.beats)).toFixed(2);
-
     statArea.innerHTML = `
         <div class="card-stat-big">${stats.val} ${unit}</div>
         <div class="card-stat-sub">
-            상위 <span class="beats-highlight">${topPercent}%</span> ${infoIcon}
+            상위 <span class="beats-highlight">${stats.top}%</span> ${infoIcon}
         </div>
       `;
   } else {
