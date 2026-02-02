@@ -39,7 +39,7 @@ function calculatePercentile(submissions, type, myRecord) {
 
   const myVal = myRecord[type];
   const fasterCount = submissions.filter((s) => s[type] < myVal).length;
-  const topPercent = ((fasterCount + 1) / total) * 100;
+  const topPercent = Math.min(((fasterCount + 1) / total) * 100, 100);
 
   return { val: myVal, top: topPercent.toFixed(2), total: total };
 }
