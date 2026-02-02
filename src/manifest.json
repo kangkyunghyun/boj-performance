@@ -7,8 +7,21 @@
   "content_scripts": [
     {
       "matches": ["https://www.acmicpc.net/status*"],
-      "js": ["chart.js", "content.js"],
-      "css": ["style.css"]
+      "js": [
+        "js/libs/chart.js",
+        "js/utils.js",
+        "js/api.js",
+        "js/data.js",
+        "js/ui.js",
+        "js/graph.js",
+        "js/main.js"
+      ],
+      "css": [
+        "css/layout.css",
+        "css/card.css",
+        "css/tooltip.css",
+        "css/theme.css"
+      ]
     }
   ],
   "icons": {

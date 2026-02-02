@@ -1,0 +1,49 @@
+/**
+ * @file theme.css
+ * @description 다크 모드 활성화 시 적용되는 색상 오버라이드
+ * .boj-graph-dark 클래스가 상위 컨테이너에 있을 때만 적용됨
+ */
+
+/* 카드 배경 및 텍스트 색상 반전 */
+.boj-graph-dark .card {
+  background: #282828;
+  border-color: #3e3e3e;
+  color: #e0e0e0;
+}
+
+.boj-graph-dark .card-title {
+  color: #a0a0a0;
+}
+
+.boj-graph-dark .card-stat-big {
+  color: #ffffff;
+}
+
+.boj-graph-dark .card-stat-sub {
+  color: #b0b0b0;
+}
+
+/* 툴팁 색상 반전 */
+.boj-graph-dark .tooltip-text {
+  background-color: #333;
+  color: #fff;
+  border-color: #555;
+}
+
+/* 툴팁 화살표 색상 반전 */
+.boj-graph-dark .tooltip-text::after {
+  border-color: transparent #333 transparent transparent;
+}
+
+.boj-graph-dark .tooltip-text::before {
+  border-color: transparent #555 transparent transparent;
+}
+
+/* 정보 아이콘 색상 반전 */
+.boj-graph-dark .info-icon {
+  fill: #555;
+}
+
+.boj-graph-dark .tooltip-wrapper:hover .info-icon {
+  fill: #888;
+}

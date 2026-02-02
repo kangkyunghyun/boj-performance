@@ -1,0 +1,28 @@
+/**
+ * @file layout.css
+ * @description 그래프 컨테이너의 전체적인 레이아웃 및 배치 설정
+ */
+
+/* 모든 요소에 box-sizing 적용하여 크기 계산 통일 */
+#boj-performance-graph-container,
+#boj-performance-graph-container * {
+  box-sizing: border-box;
+}
+
+/* 메인 컨테이너: 최대 너비 제한 및 중앙 정렬 */
+#boj-performance-graph-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0px auto 20px auto;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  background: transparent;
+}
+
+/* 차트 카드들을 가로로 배치하는 Flex 컨테이너 */
+.charts-row {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+}

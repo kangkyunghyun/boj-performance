@@ -1,0 +1,92 @@
+/**
+ * @file tooltip.css
+ * @description 정보 아이콘 및 호버 시 나타나는 툴팁 스타일
+ */
+
+/* 툴팁과 아이콘을 감싸는 래퍼 */
+.tooltip-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+}
+
+/* 툴팁 박스 (기본적으로 숨김) */
+.tooltip-text {
+  visibility: hidden;
+  width: auto;
+  white-space: nowrap;
+
+  /* 라이트 모드 기본 색상 */
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #d9d9d9;
+
+  text-align: center;
+  border-radius: 6px;
+  padding: 6px 10px;
+
+  /* 위치: 아이콘 오른쪽 */
+  position: absolute;
+  z-index: 10;
+  top: 50%;
+  left: 100%;
+  margin-left: 8px;
+  transform: translateY(-50%);
+
+  /* 폰트 및 그림자 */
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.4;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  /* 페이드 인 효과 */
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+/* 툴팁 화살표 배경색 */
+.tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent #f5f5f5 transparent transparent;
+}
+
+/* 툴팁 화살표 테두리색 */
+.tooltip-text::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -6px;
+  margin-right: 1px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent #d9d9d9 transparent transparent;
+  z-index: -1;
+}
+
+/* 호버 시 툴팁 표시 */
+.tooltip-wrapper:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* 정보 아이콘 SVG 스타일 */
+.info-icon {
+  width: 14px;
+  height: 14px;
+  fill: #cfcfcf;
+  display: block;
+  transition: fill 0.2s;
+}
+
+/* 아이콘 호버 시 색상 진하게 */
+.tooltip-wrapper:hover .info-icon {
+  fill: #8c8c8c;
+}
