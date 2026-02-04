@@ -3,7 +3,7 @@
 백준 온라인 저지(BOJ)의 채점 현황 페이지에서 내 코드의 실행 시간과 메모리 위치를 직관적인 그래프로 확인하세요.  
 
 [![Chrome Web Store](./docs/chrome-web-store.png)](https://chromewebstore.google.com/detail/boj-performance/bklabnmnfggmenngdnlndikconflcbij)
-[![Naver Whale Store](./docs/whalestore-sm.png)](https://chromewebstore.google.com/detail/boj-performance/bklabnmnfggmenngdnlndikconflcbij)
+[![Naver Whale Store](./docs/whalestore-sm.png)](https://store.whale.naver.com/detail/clhhbjiamhmgpehbmmacbppbiiijccpd)
 
 ## ✨ 주요 기능
 
