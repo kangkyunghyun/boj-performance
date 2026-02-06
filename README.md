@@ -4,6 +4,7 @@
 
 [![Chrome Web Store](./docs/chrome-web-store.png)](https://chromewebstore.google.com/detail/boj-performance/bklabnmnfggmenngdnlndikconflcbij)
 [![Naver Whale Store](./docs/whalestore-sm.png)](https://store.whale.naver.com/detail/clhhbjiamhmgpehbmmacbppbiiijccpd)
+[![Firefox Add-ons](./docs/firefox-sm.png)](https://addons.mozilla.org/ko/firefox/addon/boj-performance)
 
 ## ✨ 주요 기능
 
@@ -25,8 +26,8 @@
 
 ## 👀 미리보기
 
-| 라이트 모드 | 다크 모드 |
-| :---: | :---: |
+|                         라이트 모드                         |                         다크 모드                         |
+| :---------------------------------------------------------: | :-------------------------------------------------------: |
 | ![Light Mode Screenshot](./docs/screenshot-theme-light.png) | ![Dark Mode Screenshot](./docs/screenshot-theme-dark.png) |
 
 ## 🚀 설치 방법
