@@ -9,22 +9,20 @@ async function main() {
   const problemId = params.get("problem_id");
   if (!problemId) return;
 
+  // 내 기록 조회
+  const myId = getLoginId();
+  if (!myId) return;
+
+  const currentLangId = params.get("language_id") || "";
+
+  // 기록 없으면 종료
+  const myRecord = await fetchMyBestSubmission(problemId, myId, currentLangId);
+  if (!myRecord) return;
+
   // UI 초기화 및 주입
   const ui = injectGraphContainer();
   if (!ui) return;
   const { timeCard, memoryCard } = ui;
-
-  // 내 기록 조회
-  let myRecord = null;
-  const currentLangId = params.get("language_id") || "";
-  const myId = getLoginId();
-
-  if (myId) {
-    updateCardLoading(timeCard, "내 기록 조회 중...");
-    updateCardLoading(memoryCard, "내 기록 조회 중...");
-
-    myRecord = await fetchMyBestSubmission(problemId, myId, currentLangId);
-  }
 
   // 전체 데이터 로드 및 차트 그리기 함수 정의
   const loadAndDraw = async () => {
