@@ -4,8 +4,12 @@
  */
 
 async function main() {
-  // 문제 내 채점 현황 페이지 확인
   const params = new URLSearchParams(window.location.search);
+
+  // 대회 페이지 확인
+  if (params.get("contest_id")) return;
+
+  // 문제 내 채점 현황 페이지 확인
   const problemId = params.get("problem_id");
   if (!problemId) return;
 
