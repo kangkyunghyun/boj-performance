@@ -4,7 +4,7 @@
 
 [![Chrome Web Store](./docs/chrome-web-store.png)](https://chromewebstore.google.com/detail/boj-performance/bklabnmnfggmenngdnlndikconflcbij)
 [![Naver Whale Store](./docs/whalestore-sm.png)](https://store.whale.naver.com/detail/clhhbjiamhmgpehbmmacbppbiiijccpd)
-<!-- [![Firefox Add-ons](./docs/firefox-sm.png)](https://addons.mozilla.org/ko/firefox/addon/boj-performance) -->
+[![Firefox Add-ons](./docs/firefox-sm.png)](https://addons.mozilla.org/ko/firefox/addon/boj-performance)
 
 ## ✨ 주요 기능
 
