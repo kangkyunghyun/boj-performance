@@ -1,6 +1,16 @@
 # <img align="left" src="src/icons/icon48.png"/>BOJ Performance
 
-백준 온라인 저지(BOJ)의 채점 현황 페이지에서 내 코드의 실행 시간과 메모리 위치를 직관적인 그래프로 확인하세요.  
+> [!IMPORTANT]
+> BOJ Performance는 지원 대상 서비스 종료로 인해 더 이상 유지보수되지 않습니다.  
+> 이 저장소는 프로젝트 기록과 다운로드 현황을 보존하기 위해 아카이브되었습니다.
+
+백준 온라인 저지(BOJ)의 채점 현황 페이지에서 내 코드의 실행 시간과 메모리 위치를 직관적인 그래프로 확인할 수 있었던 브라우저 확장입니다.
+
+![Status](https://img.shields.io/badge/status-archived-lightgrey)
+![Total Users](https://img.shields.io/badge/total%20users-103-blue)
+![Chrome](https://img.shields.io/badge/Chrome-57-4285F4)
+![Whale](https://img.shields.io/badge/Whale-45-03C75A)
+![Firefox](https://img.shields.io/badge/Firefox-1-FF7139)
 
 [![Chrome Web Store](./docs/chrome-web-store.png)](https://chromewebstore.google.com/detail/boj-performance/bklabnmnfggmenngdnlndikconflcbij)
 [![Naver Whale Store](./docs/whalestore-sm.png)](https://store.whale.naver.com/detail/clhhbjiamhmgpehbmmacbppbiiijccpd)
