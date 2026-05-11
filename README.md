@@ -7,9 +7,9 @@
 백준 온라인 저지(BOJ)의 채점 현황 페이지에서 내 코드의 실행 시간과 메모리 위치를 직관적인 그래프로 확인할 수 있었던 브라우저 확장입니다.
 
 ![Status](https://img.shields.io/badge/status-archived-lightgrey)
-![Total Users](https://img.shields.io/badge/total%20users-103-blue)
+![Total Users](https://img.shields.io/badge/total%20users-112-blue)
 ![Chrome](https://img.shields.io/badge/Chrome-57-4285F4)
-![Whale](https://img.shields.io/badge/Whale-45-03C75A)
+![Whale](https://img.shields.io/badge/Whale-54-03C75A)
 ![Firefox](https://img.shields.io/badge/Firefox-1-FF7139)
 
 [![Chrome Web Store](./docs/chrome-web-store.png)](https://chromewebstore.google.com/detail/boj-performance/bklabnmnfggmenngdnlndikconflcbij)
