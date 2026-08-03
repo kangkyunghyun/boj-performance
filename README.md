@@ -1,13 +1,13 @@
 # <img align="left" src="src/icons/icon48.png"/>BOJ Performance
 
 > [!IMPORTANT]
-> BOJ Performance는 지원 대상 서비스 종료로 인해 더 이상 유지보수되지 않습니다.  
-> 이 저장소는 프로젝트 기록과 다운로드 현황을 보존하기 위해 아카이브되었습니다.
+> BOJ Performance는 지원 대상 서비스 종료로 인해 운영 및 유지보수가 종료되었습니다.
+> 이 저장소는 프로젝트 기록을 위해 공개되어 있어 읽고 포크할 수 있지만, 이슈·Pull Request·추가 개발은 받지 않습니다.
 
 백준 온라인 저지(BOJ)의 채점 현황 페이지에서 내 코드의 실행 시간과 메모리 위치를 직관적인 그래프로 확인할 수 있었던 브라우저 확장입니다.
 
-![Status](https://img.shields.io/badge/status-archived-lightgrey)
-![Total Users](https://img.shields.io/badge/total%20users-112-blue)
+![Status](https://img.shields.io/badge/status-maintenance%20ended-lightgrey)
+![Total Users](https://img.shields.io/badge/total%20users-225-blue)
 ![Chrome](https://img.shields.io/badge/Chrome-57-4285F4)
 ![Whale](https://img.shields.io/badge/Whale-54-03C75A)
 ![Firefox](https://img.shields.io/badge/Firefox-1-FF7139)
@@ -55,7 +55,7 @@
 
 ## 🐛 버그 제보 및 기여
 
-Issue와 Pull Request를 통한 버그 제보 및 새로운 기능 제안은 언제나 환영입니다!
+운영 및 유지보수가 종료되어 이 저장소에서는 Issue와 Pull Request를 통한 버그 제보, 기능 제안 및 코드 기여를 받지 않습니다. 코드는 계속 열람하고 포크할 수 있습니다.
 
 ## 📜 License
 
