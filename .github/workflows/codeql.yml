@@ -1,0 +1,52 @@
+name: CodeQL
+
+# 코드 정적 분석. 결과는 Security 탭의 code scanning으로 올리고 PR을 막지 않는다(보고만).
+# 빌드가 없는 확장이라 두 언어 모두 build-mode none으로 분석한다.
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop]
+  schedule:
+    - cron: "17 18 * * 0" # 매주 월요일 03:17 KST
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: CodeQL (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: javascript-typescript # src/js
+            build-mode: none
+          - language: actions # .github/workflows
+            build-mode: none
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+          # 함께 묶은 Chart.js 번들은 외부 코드라 분석에서 뺀다.
+          config: |
+            paths-ignore:
+              - src/js/libs/chart.js
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          category: "/language:${{ matrix.language }}"
