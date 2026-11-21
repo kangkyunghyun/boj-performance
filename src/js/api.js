@@ -3,6 +3,11 @@
  * @description 백준 서버에서 데이터를 크롤링/조회하는 함수 모음
  */
 
+// 결과 표 행의 채점 서버 값. 열이 없으면 빈 문자열
+function getJudgeServer(row) {
+  return row.querySelector(".judge-platform")?.textContent.trim() || "";
+}
+
 // 문제의 전체 정답자 데이터를 페이지네이션하며 조회
 async function fetchSolvedData(problemId, langId) {
   let data = [];
@@ -25,7 +30,7 @@ async function fetchSolvedData(problemId, langId) {
           const memory = parseInt(cols[4].innerText);
           const time = parseInt(cols[5].innerText);
           if (!isNaN(memory) && !isNaN(time)) {
-            data.push({ memory, time });
+            data.push({ memory, time, server: getJudgeServer(row) });
           }
         }
       });
@@ -55,6 +60,7 @@ async function fetchMyBestSubmission(problemId, userId, langId) {
     const doc = new DOMParser().parseFromString(text, "text/html");
     const rows = doc.querySelectorAll("#status-table tbody tr");
     let best = null;
+    let baseServer = null;
 
     rows.forEach((row) => {
       const cols = row.querySelectorAll("td");
@@ -63,12 +69,16 @@ async function fetchMyBestSubmission(problemId, userId, langId) {
         const time = parseInt(cols[5].innerText);
 
         if (!isNaN(memory) && !isNaN(time)) {
+          // 가장 최근 정답 제출(첫 행)의 채점 서버를 기준으로 삼음
+          const server = getJudgeServer(row);
+          if (baseServer === null) baseServer = server;
+          if (server !== baseServer) return;
           if (
             !best ||
             time < best.time ||
             (time === best.time && memory < best.memory)
           ) {
-            best = { time, memory };
+            best = { time, memory, server };
           }
         }
       }

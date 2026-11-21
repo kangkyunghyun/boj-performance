@@ -13,7 +13,11 @@ function drawChart(card, chartData, type, myRecord, stats, currentLangId) {
 
   // 상단 텍스트 정보 구성
   const langName = getLanguageName(currentLangId);
-  const detailText = `최근 <span style="color:#4db8ff">${stats.total}</span>건의 제출 기준${langName ? `<br>(${langName})` : ""}`;
+  const n = `<span style="color:#4db8ff">${stats.total}</span>`;
+  const scope = myRecord?.server
+    ? `채점 서버 ${myRecord.server}, 최근 ${n}건 기준`
+    : `최근 ${n}건의 제출 기준`;
+  const detailText = `${scope}${langName ? `<br>(${langName})` : ""}`;
 
   const infoIcon = `
     <div class="tooltip-wrapper">
