@@ -21,6 +21,17 @@ function getLanguageName(langId) {
   return null;
 }
 
+// 언어 이름에 맞는 언어 필터 값. 없으면 null
+function getLanguageId(name) {
+  const options = document.querySelectorAll(
+    'select[name="language_id"] option',
+  );
+  for (const option of options) {
+    if (option.innerText.trim() === name) return option.value;
+  }
+  return null;
+}
+
 // 다크 모드 활성화 여부 확인
 function isDarkMode() {
   // 1순위: 확장 프로그램 설정 확인

@@ -4,7 +4,8 @@
  */
 
 // 그래프가 들어갈 컨테이너 생성, 페이지에 주입
-function injectGraphContainer() {
+// langName: 비교 언어 이름(없으면 모든 언어), others: 다른 언어 [{ name, href }]
+function injectGraphContainer(dark, langName, others) {
   let container = document.getElementById("boj-performance-graph-container");
 
   // 초기화
@@ -24,11 +25,9 @@ function injectGraphContainer() {
   }
 
   // 다크 모드 적용
-  if (isDarkMode()) {
-    container.classList.add("boj-graph-dark");
-  } else {
-    container.classList.remove("boj-graph-dark");
-  }
+  container.classList.toggle("boj-graph-dark", dark);
+
+  container.appendChild(createLangLine(langName, others));
 
   // 카드 레이아웃 생성
   const chartsRow = document.createElement("div");
@@ -42,6 +41,22 @@ function injectGraphContainer() {
   container.appendChild(chartsRow);
 
   return { timeCard, memoryCard };
+}
+
+// 비교 언어 줄: "{언어} 기준 · 다른 언어 {링크}, {링크}"
+// 언어 이름은 BOJ 페이지 글자라 textContent로만 넣음
+function createLangLine(langName, others) {
+  const line = document.createElement("div");
+  line.className = "lang-line";
+  line.append(`${langName || "모든 언어"} 기준`);
+  others.forEach((o, i) => {
+    line.append(i === 0 ? " · 다른 언어 " : ", ");
+    const link = document.createElement("a");
+    link.href = o.href;
+    link.textContent = o.name;
+    line.append(link);
+  });
+  return line;
 }
 
 // 개별 카드 요소 생성
