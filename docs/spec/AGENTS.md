@@ -27,7 +27,7 @@
 | 작업 | 볼 문서 |
 |---|---|
 | "작동 안 함" 제보, BOJ 변경 대응 | [4-1](4-1-CONTRACT.md), [4-4-2](4-4-EXECUTION.md#4-4-2-boj-쪽-변경과-증상), [boj-diagnose 스킬](../../.claude/skills/boj-diagnose/SKILL.md) |
-| 내 기록, 표본, 상위 비율 계산 변경 | [2-2-2](2-2-REQUIREMENTS.md#2-2-2-성능-위치), [5-1-3](5-1-VERIFICATION.md#5-1-3-계산-확인), [DECISIONS](DECISIONS.md) |
+| 내 기록, 표본, 상위 비율 계산 변경 | [2-2-2](2-2-REQUIREMENTS.md#2-2-2-성능-위치), [4-3-2](4-3-STATE-MANAGEMENT.md#4-3-2-세션-저장소), [5-1-3](5-1-VERIFICATION.md#5-1-3-계산-확인), [DECISIONS](DECISIONS.md) |
 | 카드 모양, 문구, 색 변경 | [3-3](3-3-LAYOUT.md) |
 | 테마 판정 변경 | [2-2-4](2-2-REQUIREMENTS.md#2-2-4-테마), [4-1-5](4-1-CONTRACT.md#4-1-5-boj-extended-테마-설정), [4-3](4-3-STATE-MANAGEMENT.md) |
 | 구성 요소나 파일 추가 | [4-2](4-2-COMPONENT-ARCHITECTURE.md) |
@@ -41,7 +41,7 @@
 |---|---|
 | 4-2 진입 | [`src/js/main.js`](../../src/js/main.js) |
 | 4-2 페이지 읽기, 4-1-5 테마 설정 | [`src/js/utils.js`](../../src/js/utils.js) |
-| 4-2 BOJ 조회, 4-1-1 요청 주소, 4-1-4 결과 표 읽기 | [`src/js/api.js`](../../src/js/api.js) |
+| 4-2 BOJ 조회, 4-1-1 요청 주소, 4-1-4 결과 표 읽기, 4-3-2 세션 저장소 | [`src/js/api.js`](../../src/js/api.js) |
 | 4-2 계산, 2-2-2 분포와 상위 비율 | [`src/js/data.js`](../../src/js/data.js) |
 | 4-2 카드, 4-1-1 끼워 넣을 자리, 3-3-2 분석 중과 데이터 부족 | [`src/js/ui.js`](../../src/js/ui.js) |
 | 4-2 그래프, 3-3-3 툴팁 문구, 3-3-4 그래프, 3-3-5 막대와 축 색 | [`src/js/graph.js`](../../src/js/graph.js) |
