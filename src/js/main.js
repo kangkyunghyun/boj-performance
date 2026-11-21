@@ -28,19 +28,9 @@ async function main() {
   if (!ui) return;
   const { timeCard, memoryCard } = ui;
 
-  // 전체 데이터 로드 및 차트 그리기 함수 정의
-  const loadAndDraw = async () => {
-    updateCardLoading(timeCard, "분석 중...");
-    updateCardLoading(memoryCard, "분석 중...");
-
-    // 데이터 가져오기 (api.js)
-    const submissions = await fetchSolvedData(problemId, currentLangId);
-
-    if (submissions.length === 0) {
-      updateCardError(timeCard);
-      updateCardError(memoryCard);
-      return;
-    }
+  // 표본 행으로 계산하고 차트 그리기
+  const draw = (rows) => {
+    const submissions = rows.map(([, time, memory]) => ({ time, memory }));
 
     // 데이터 가공 (data.js)
     const timeData = processData(submissions, "time", myRecord);
@@ -59,6 +49,52 @@ async function main() {
       memoryStats,
       currentLangId,
     );
+  };
+
+  // 전체 데이터 로드 및 차트 그리기 함수 정의
+  const loadAndDraw = async () => {
+    const cacheKey = sampleCacheKey(problemId, currentLangId);
+    const cached = loadSampleCache(cacheKey);
+
+    // 저장한 표본으로 먼저 그리고 새 제출만 받아 붙임
+    if (cached) {
+      draw(cached);
+      const { rows, complete } = await fetchSolvedData(
+        problemId,
+        currentLangId,
+        cached[0][0],
+      );
+      if (!complete || rows.length === 0) return;
+      const merged = mergeSamples(rows, cached);
+      draw(merged);
+      saveSampleCache(cacheKey, merged);
+      return;
+    }
+
+    updateCardLoading(timeCard, "분석 중...");
+    updateCardLoading(memoryCard, "분석 중...");
+
+    // 첫 페이지를 받으면 바로 그림 (api.js)
+    let shown = 0;
+    const { rows, complete } = await fetchSolvedData(
+      problemId,
+      currentLangId,
+      null,
+      (firstRows) => {
+        if (firstRows.length === 0) return;
+        draw(firstRows);
+        shown = firstRows.length;
+      },
+    );
+
+    if (rows.length === 0) {
+      updateCardError(timeCard);
+      updateCardError(memoryCard);
+      return;
+    }
+
+    if (rows.length !== shown) draw(rows);
+    if (complete) saveSampleCache(cacheKey, rows);
   };
 
   // 5. 실행

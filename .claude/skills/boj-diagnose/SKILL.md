@@ -54,4 +54,4 @@ aside repl --account u1 'await openTab("https://acmicpc.net/status?problem_id=10
 
 ## 5. 수정 후
 
-`AGENTS.md`의 "검증" 절차로 실제 확장을 로드해 확인한다. 바뀐 의존점이 있으면 `docs/spec/4-1-CONTRACT.md`와 4-4-2도 같이 갱신한다.
+`AGENTS.md`의 "검증" 절차로 실제 확장을 로드해 확인한다. 같은 탭에 저장한 표본이 차단·DOM 변경 증상을 가릴 수 있으니 새 탭에서 확인한다(`docs/spec/4-4-EXECUTION.md`의 4-4-2). 바뀐 의존점이 있으면 `docs/spec/4-1-CONTRACT.md`와 4-4-2도 같이 갱신한다.

@@ -8,12 +8,12 @@
 
 | 유저 스토리 | 요구사항 | 검증 케이스 |
 |---|---|---|
-| BOJP-US-001 | [2-2-2 성능 위치](2-2-REQUIREMENTS.md#2-2-2-성능-위치) | BOJP-QA-001, BOJP-QA-002, BOJP-QA-009, BOJP-QA-010, BOJP-QA-011, BOJP-QA-012, BOJP-QA-019부터 BOJP-QA-024 |
+| BOJP-US-001 | [2-2-2 성능 위치](2-2-REQUIREMENTS.md#2-2-2-성능-위치) | BOJP-QA-001, BOJP-QA-002, BOJP-QA-009, BOJP-QA-010, BOJP-QA-011, BOJP-QA-012, BOJP-QA-019부터 BOJP-QA-024, BOJP-QA-025부터 BOJP-QA-027 |
 | BOJP-US-002 | [2-2-3 언어별 비교](2-2-REQUIREMENTS.md#2-2-3-언어별-비교) | BOJP-QA-003, BOJP-QA-004 |
 | BOJP-US-003 | [2-2-4 테마](2-2-REQUIREMENTS.md#2-2-4-테마) | BOJP-QA-014, BOJP-QA-015, BOJP-QA-016 |
 | 공통 | [2-2-1 적용 범위](2-2-REQUIREMENTS.md#2-2-1-적용-범위) | BOJP-QA-005부터 BOJP-QA-008, BOJP-QA-018 |
-| 공통 | [2-2-5 실패와 복구](2-2-REQUIREMENTS.md#2-2-5-실패와-복구) | BOJP-QA-004부터 BOJP-QA-006, BOJP-QA-013 |
-| 공통 | [2-2-6 품질 제약](2-2-REQUIREMENTS.md#2-2-6-품질-제약) | BOJP-QA-017 |
+| 공통 | [2-2-5 실패와 복구](2-2-REQUIREMENTS.md#2-2-5-실패와-복구) | BOJP-QA-004부터 BOJP-QA-006, BOJP-QA-013, BOJP-QA-029부터 BOJP-QA-031 |
+| 공통 | [2-2-6 품질 제약](2-2-REQUIREMENTS.md#2-2-6-품질-제약) | BOJP-QA-017, BOJP-QA-025부터 BOJP-QA-028 |
 
 <br>
 
@@ -32,15 +32,22 @@
 | BOJP-QA-007 | 대회 문제에 내 정답 제출이 있음 | `contest_id`가 있는 채점 현황을 엶 | 성능 카드 없음 |
 | BOJP-QA-008 | 없음 | 문제를 지정하지 않은 `https://acmicpc.net/status`를 엶 | 성능 카드 없음 |
 | BOJP-QA-009 | 그 문제에 내 정답 제출이 있음 | 다른 사용자의 `user_id`로 거른 그 문제의 채점 현황을 엶 | 내 기록과 전체 정답 제출 표본으로 결과 표시 |
-| BOJP-QA-010 | BOJP-QA-001 결과가 보임 | 결과 표의 다음 페이지로 이동 | 새 페이지에서 "분석 중..." 뒤 결과 다시 표시 |
+| BOJP-QA-010 | BOJP-QA-001 결과가 보임 | 결과 표의 다음 페이지로 이동 | 새 페이지에서 "분석 중..." 없이 같은 결과 표시 |
 | BOJP-QA-011 | 그 문제에 내 정답 제출이 있음 | `https://www.acmicpc.net/status?problem_id={문제}`를 엶 | 주소가 `https://acmicpc.net`으로 바뀐 뒤 결과 표시 |
 | BOJP-QA-012 | 정답 제출이 200건보다 많은 문제에 내 정답 제출이 있음 | 채점 현황을 엶 | 안내 툴팁 `최근 200건의 제출 기준` |
-| BOJP-QA-013 | 그 문제에 내 정답 제출이 있음 | 개발자 도구 요청 차단에 표본 주소 `/status?problem_id={문제}&result_id=4`를 넣고 채점 현황을 엶 | 두 카드에 빨간 글자 "데이터 부족"<br>그래프 없음 |
+| BOJP-QA-013 | 그 문제에 내 정답 제출이 있음<br>그 문제를 연 적 없는 새 탭 | 개발자 도구 요청 차단에 표본 주소 `/status?problem_id={문제}&result_id=4`를 넣고 채점 현황을 엶 | 두 카드에 빨간 글자 "데이터 부족"<br>그래프 없음 |
 | BOJP-QA-014 | `localStorage`의 `boj-extended-theme`가 `dark`<br>운영체제 밝은 모드 | 채점 현황을 엶 | 어두운 테마 색 |
 | BOJP-QA-015 | `boj-extended-theme`가 `light`<br>운영체제 어두운 모드 | 채점 현황을 엶 | 밝은 테마 색 |
 | BOJP-QA-016 | `boj-extended-theme` 없음<br>운영체제 어두운 모드 | 채점 현황을 엶 | 어두운 테마 색 |
-| BOJP-QA-017 | BOJP-QA-012와 같음 | 개발자 도구 네트워크 탭을 열고 채점 현황을 엶 | 확장이 보낸 `/status` 요청 11회 이하<br>앞 요청이 끝난 뒤 다음 요청 시작<br>BOJ 밖의 호스트로 보낸 요청 없음<br>`localStorage`에 확장이 쓴 키 없음 |
+| BOJP-QA-017 | BOJP-QA-012와 같음<br>새 탭 | 개발자 도구 네트워크 탭을 열고 채점 현황을 엶 | 확장이 보낸 `/status` 요청 11회 이하<br>앞 요청이 끝난 뒤 다음 요청 시작<br>BOJ 밖의 호스트로 보낸 요청 없음<br>`localStorage`에 확장이 쓴 키 없음 |
 | BOJP-QA-018 | Whale, Firefox에 각각 확장을 로드하고 BOJ에 로그인 | BOJP-QA-001 | BOJP-QA-001과 같음 |
+| BOJP-QA-025 | BOJP-QA-012와 같음<br>새 탭 | 채점 현황을 엶 | "분석 중..." 뒤 안내 툴팁 `최근 20건의 제출 기준`으로 먼저 표시<br>표본 조회가 끝나면 `최근 200건의 제출 기준`으로 한 번 갱신<br>`sessionStorage`에 `boj-performance:v1:{문제}:` 키, `rows` 200행 |
+| BOJP-QA-026 | BOJP-QA-025 직후 그 문제에 새 정답 제출 없음 | 같은 탭에서 새로 고침 | "분석 중..." 없이 BOJP-QA-025와 같은 값<br>확장이 보낸 `/status` 요청 2회 |
+| BOJP-QA-027 | BOJP-QA-025 직후 그 문제에 새 정답 제출이 생김 | 같은 탭에서 새로 고침 | 저장한 표본으로 먼저 표시한 뒤 한 번 갱신<br>저장한 `rows`의 첫 행이 새 제출, 200행 유지 |
+| BOJP-QA-028 | BOJP-QA-025 결과가 있는 탭과 다른 새 탭 | 같은 주소를 엶 | BOJP-QA-025와 같이 "분석 중..."부터 시작<br>`/status` 요청 11회 이하 |
+| BOJP-QA-029 | BOJP-QA-025 직후 | 콘솔에서 그 키 값을 `{`로 바꾸고 새로 고침 | BOJP-QA-025와 같이 처음부터 받아 표시<br>키에 올바른 값이 다시 저장됨 |
+| BOJP-QA-030 | 그 문제를 연 적 없는 탭에서 BOJ 페이지가 열려 있음 | 그 페이지 콘솔에서 `sessionStorage`를 용량 한도까지 채운 뒤 같은 탭에서 그 문제의 채점 현황을 엶 | BOJP-QA-025와 같은 결과<br>콘솔에 확장 오류 없음<br>그 키 없음 |
+| BOJP-QA-031 | BOJP-QA-025 직후 | 개발자 도구 요청 차단에 `/status?problem_id={문제}&result_id=4`를 넣고 새로 고침 | 저장한 표본으로 표시한 결과가 그대로 남음<br>그 키 값이 바뀌지 않음 |
 
 <br>
 
