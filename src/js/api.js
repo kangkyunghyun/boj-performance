@@ -103,8 +103,9 @@ function mergeSamples(newRows, cachedRows) {
   return newRows.concat(cachedRows).slice(0, 200);
 }
 
-// 사용자의 해당 문제 최고 기록 조회(실행 시간, 메모리)
-async function fetchMyBestSubmission(problemId, userId, langId) {
+// 내 정답 제출 첫 페이지. 행: { time, memory, lang }, 최신순
+// lang: 언어 셀(7번)의 첫 부분. 요청 예외면 null
+async function fetchMySubmissions(problemId, userId, langId) {
   let url = `${location.origin}/status?problem_id=${problemId}&user_id=${userId}&result_id=4`;
   if (langId) url += `&language_id=${langId}`;
 
@@ -112,27 +113,18 @@ async function fetchMyBestSubmission(problemId, userId, langId) {
     const res = await fetch(url);
     const text = await res.text();
     const doc = new DOMParser().parseFromString(text, "text/html");
-    const rows = doc.querySelectorAll("#status-table tbody tr");
-    let best = null;
-
-    rows.forEach((row) => {
+    const subs = [];
+    for (const row of doc.querySelectorAll("#status-table tbody tr")) {
       const cols = row.querySelectorAll("td");
-      if (cols.length > 6) {
-        const memory = parseInt(cols[4].innerText);
-        const time = parseInt(cols[5].innerText);
-
-        if (!isNaN(memory) && !isNaN(time)) {
-          if (
-            !best ||
-            time < best.time ||
-            (time === best.time && memory < best.memory)
-          ) {
-            best = { time, memory };
-          }
-        }
-      }
-    });
-    return best;
+      if (cols.length <= 7) continue;
+      const memory = parseInt(cols[4].innerText);
+      const time = parseInt(cols[5].innerText);
+      if (isNaN(memory) || isNaN(time)) continue;
+      // 내 제출은 "C++17 / 수정"
+      const lang = cols[7].textContent.split("/")[0].trim();
+      subs.push({ time, memory, lang });
+    }
+    return subs;
   } catch (e) {
     return null;
   }
