@@ -97,6 +97,7 @@ git flow를 쓴다.
 - 커밋 메시지: `<type>: <한글 설명>`. type은 `feat`, `fix`, `refactor`, `docs`, `chore`, `ci`.
   - 예: `fix: 백준 도메인 변경(acmicpc.net) 대응`
   - 에이전트가 커밋하면 끝에 빈 줄과 `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`를 붙인다.
+- 이슈 제목: 커밋 형식 `<type>: <한글 설명>`. 예: `fix: 채점 현황 카드 미표시`
 - PR 제목: 커밋 형식 뒤에 ` (#이슈번호)`. 예: `fix: 백준 도메인 변경(acmicpc.net) 대응 (#12)`
 - 커밋·푸시·PR 생성·병합·태그는 요청받았을 때만 한다.
 

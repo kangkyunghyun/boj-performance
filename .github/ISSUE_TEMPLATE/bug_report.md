@@ -1,7 +1,7 @@
 ---
 name: "Bug Report"
 about: 성능 카드가 안 보이거나 값이 이상할 때 제보합니다.
-title: "[BUG] "
+title: "fix: "
 labels: bug
 assignees: ''
 
