@@ -33,10 +33,8 @@ async function main() {
     updateCardLoading(timeCard, "분석 중...");
     updateCardLoading(memoryCard, "분석 중...");
 
-    // 데이터 가져오기 (api.js). 내 기록과 같은 채점 서버의 제출만 비교
-    const submissions = (await fetchSolvedData(problemId, currentLangId)).filter(
-      (s) => !myRecord.server || s.server === myRecord.server,
-    );
+    // 데이터 가져오기 (api.js)
+    const submissions = await fetchSolvedData(problemId, currentLangId);
 
     if (submissions.length === 0) {
       updateCardError(timeCard);
