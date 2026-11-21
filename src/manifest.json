@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "BOJ Performance",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "백준 온라인 저지(BOJ) 채점 현황에 내 코드의 성능(실행 시간, 메모리) 위치를 그래프로 시각화합니다.",
   "permissions": ["declarativeNetRequest"],
   "declarative_net_request": {
@@ -38,5 +38,12 @@
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{e8f7a9c2-4b1d-4f3e-8a5c-9b2d1e0f3a4c}",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": { "required": ["none"] }
+    }
   }
 }
