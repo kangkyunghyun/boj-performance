@@ -67,7 +67,7 @@ function createCardElement(title, id) {
   card.innerHTML = `
     <div class="card-header">
         <div class="card-title">${title}</div>
-        <div class="stat-area">
+        <div class="stat-area" aria-live="polite">
             <div class="card-stat-big">-</div>
             <div class="card-stat-sub">...</div>
         </div>
