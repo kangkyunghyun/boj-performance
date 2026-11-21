@@ -213,3 +213,19 @@
 | 배경 | 상위 비율 (a + 1) ÷ n에서 내 값과 같은 제출을 a에 넣지 않아, 같은 값이 많으면 상위 비율이 좋게 보인다. |
 | 채택 | 지금 규칙을 유지한다. 같은 값은 a에 넣지 않고 공동 순위를 따로 표시하지 않는다. |
 | 근거 | 사용자 결정(2026-11-21) |
+
+<br>
+
+<a id="d-015"></a>
+
+**D-015. Firefox 확장 ID를 manifest에 포함**
+
+| 항목 | 내용 |
+|---|---|
+| 날짜 | 2026-11-21 |
+| 상태 | 적용됨 |
+| 배경 | 1.0.4까지 저장소의 `manifest.json`에는 Firefox 확장 ID가 없었다. Firefox Add-ons에 올린 1.0.4(ID `{e8f7a9c2-4b1d-4f3e-8a5c-9b2d1e0f3a4c}`, 최소 버전 140)는 Firefox용 manifest를 따로 고쳐 올린 것으로 보인다.<br>#7 자동 배포도 세 스토어에 같은 zip을 써야 한다. |
+| 채택 | `browser_specific_settings.gecko`에 AMO 등록 ID, `strict_min_version` `140.0`, `data_collection_permissions.required` `none`을 넣고 같은 manifest를 세 스토어에 쓴다. |
+| 영향 | 140 미만 Firefox는 업데이트를 받지 못한다. AMO의 1.0.4와 같은 조건이다.<br>Chrome, Whale은 이 키를 쓰지 않으며 확장 관리 화면에 경고를 보일 수 있다. |
+| 이전 동작 | 저장소 manifest에 Firefox ID 없음 |
+| 근거 | 사용자 결정(2026-11-21) |
