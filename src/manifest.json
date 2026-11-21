@@ -13,10 +13,10 @@
       }
     ]
   },
-  "host_permissions": ["https://www.acmicpc.net/*"],
+  "host_permissions": ["https://acmicpc.net/*", "https://www.acmicpc.net/*"],
   "content_scripts": [
     {
-      "matches": ["https://www.acmicpc.net/status*"],
+      "matches": ["https://acmicpc.net/status*", "https://www.acmicpc.net/status*"],
       "js": [
         "js/libs/chart.js",
         "js/utils.js",

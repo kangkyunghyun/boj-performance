@@ -6,7 +6,7 @@
 // 문제의 전체 정답자 데이터를 페이지네이션하며 조회
 async function fetchSolvedData(problemId, langId) {
   let data = [];
-  let baseUrl = `https://www.acmicpc.net/status?problem_id=${problemId}&result_id=4`;
+  let baseUrl = `${location.origin}/status?problem_id=${problemId}&result_id=4`;
   if (langId) baseUrl += `&language_id=${langId}`;
 
   let nextUrl = baseUrl;
@@ -33,7 +33,7 @@ async function fetchSolvedData(problemId, langId) {
       const nextBtn = doc.querySelector("#next_page");
       nextUrl = nextBtn ? nextBtn.getAttribute("href") : null;
       if (nextUrl && !nextUrl.startsWith("http")) {
-        nextUrl = `https://www.acmicpc.net${nextUrl}`;
+        nextUrl = `${location.origin}${nextUrl}`;
       }
       pageCount++;
     } catch (e) {
@@ -46,7 +46,7 @@ async function fetchSolvedData(problemId, langId) {
 
 // 사용자의 해당 문제 최고 기록 조회(실행 시간, 메모리)
 async function fetchMyBestSubmission(problemId, userId, langId) {
-  let url = `https://www.acmicpc.net/status?problem_id=${problemId}&user_id=${userId}&result_id=4`;
+  let url = `${location.origin}/status?problem_id=${problemId}&user_id=${userId}&result_id=4`;
   if (langId) url += `&language_id=${langId}`;
 
   try {
