@@ -1,0 +1,56 @@
+name: Publish Chrome Web Store
+
+# 수동 실행. main에서, 태그 v<버전>이 main 최신 커밋을 가리킬 때만 게시한다.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "게시할 manifest 버전. 예: 1.0.6"
+        required: true
+        type: string
+      confirm_publish:
+        description: "확인 문구 publish-chrome 입력"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Publish Chrome Web Store
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+
+      - name: Verify input
+        env:
+          CONFIRM_PUBLISH: ${{ inputs.confirm_publish }}
+        run: |
+          if [ "$GITHUB_REF_NAME" != "main" ]; then
+            echo "main에서만 실행한다. 지금: $GITHUB_REF_NAME"
+            exit 1
+          fi
+          if [ "$CONFIRM_PUBLISH" != "publish-chrome" ]; then
+            echo "confirm_publish는 publish-chrome 이어야 한다."
+            exit 1
+          fi
+
+      # 버전 형식, manifest version, 태그가 지금 커밋인지 확인 뒤 zip 생성
+      - name: Package
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: scripts/package.sh "$INPUT_VERSION"
+
+      - name: Publish
+        env:
+          CHROME_PACKAGE_FILE: boj-performance-v${{ inputs.version }}.zip
+          CHROME_EXTENSION_ID: bklabnmnfggmenngdnlndikconflcbij
+          CHROME_PUBLISHER_ID: ${{ secrets.CHROME_PUBLISHER_ID }}
+          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
+          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_CLIENT_SECRET }}
+          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
+        run: node scripts/publish-chrome.js
