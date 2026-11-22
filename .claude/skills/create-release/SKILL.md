@@ -12,14 +12,14 @@ description: 새 버전을 스토어에 내거나 배포본을 긴급 수정할 
 | 1 | 브랜치 | create-branch로 `release/<버전>`(`origin/develop` 기준) 또는 `hotfix/<버전>`(`origin/main` 기준) |
 | 2 | 버전 | `src/manifest.json`의 `version`을 `<버전>`으로 올림. hotfix는 수정 커밋도 이 브랜치에 둠 |
 | 3 | 노트 | `docs/releases/v<버전>.md`를 씀. 형식은 `docs/releases/README.md`. 앞 태그 이후 `git log`와 병합된 PR을 보고 사용자 문구로 쓰며 PR 제목을 옮기지 않음 |
-| 4 | 문구 | release-copy로 `docs/copy/`의 스토어 설명 업데이트 섹션과 홍보글을 갱신 |
+| 4 | 문구 | release-copy로 계속 알릴 기능이 있는지 보고, 있으면 `docs/copy/`의 스토어 설명 기능 소개와 홍보글에 한 줄씩 더함. 스토어 설명에 버전별 변경은 쓰지 않음 |
 | 5 | 커밋 | create-commit. 버전, 노트, 문구를 한 커밋 `chore: <버전> 버전 올림과 릴리스 노트` |
 | 6 | PR | create-pr로 base `main` Draft PR. 제목 `chore: <버전> 릴리스 (#이슈번호)`, hotfix는 `fix: ... (#이슈번호)` |
 | 7 | 병합 | 사용자 지시 뒤 merge commit으로 `main`에 병합 |
 | 8 | 태그 | `main`의 병합 커밋에 `v<버전>` 태그를 달고 push |
 | 9 | 되합치기 | head `main`, base `develop` PR을 만들고 사용자 지시 뒤 merge commit으로 병합 |
 | 10 | 패키지 | 태그 push로 `release.yml`이 zip과 노트 파일 본문의 GitHub Release를 만든다. 실행 결과, Release의 zip 첨부와 본문, `pages.yml` 랜딩 배포를 확인 |
-| 11 | 스토어 | 사용자 지시 뒤 `main`에서 `publish-chrome.yml`, `publish-firefox.yml`을 실행. 웨일은 Release의 zip을 사람이 올림. 설명란은 `docs/copy/1-1-STORE-LISTING.md`를 사람이 붙여 넣음. 입력, Secrets, 스토어 링크는 루트 `AGENTS.md`의 릴리스 절 |
+| 11 | 스토어 | 사용자 지시 뒤 `main`에서 `publish-chrome.yml`, `publish-firefox.yml`을 실행. 웨일은 Release의 zip을 사람이 올림. 4단계에서 스토어 설명을 고쳤을 때만 `docs/copy/1-1-STORE-LISTING.md`를 사람이 설명란에 붙여 넣음. 입력, Secrets, 스토어 링크는 루트 `AGENTS.md`의 릴리스 절 |
 
 ## 단계별 규칙
 
