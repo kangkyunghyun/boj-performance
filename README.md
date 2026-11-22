@@ -1,18 +1,23 @@
 # <img align="left" src="src/icons/icon48.png"/>BOJ Performance
 
 백준 온라인 저지(BOJ)의 채점 현황 페이지에서 내 코드의 실행 시간과 메모리 위치를 직관적인 그래프로 확인할 수 있는 브라우저 확장입니다.
+[홈페이지](https://kangkyunghyun.github.io/boj-performance/)에서 사용법과 업데이트 소식을 볼 수 있습니다.
 
-![Status](https://img.shields.io/badge/status-active-brightgreen)
-![Total Users](https://img.shields.io/badge/total%20users-225-blue)
-![Chrome](https://img.shields.io/badge/Chrome-57-4285F4)
-![Whale](https://img.shields.io/badge/Whale-54-03C75A)
-![Firefox](https://img.shields.io/badge/Firefox-1-FF7139)
+<p>
+  <a href="https://github.com/kangkyunghyun/boj-performance/releases/latest"><img alt="GitHub Release" src="https://img.shields.io/github/v/release/kangkyunghyun/boj-performance?style=flat-square&logo=github&label=release"></a>
+  <a href="./LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/kangkyunghyun/boj-performance?style=flat-square&logo=github"></a>
+  <a href="https://github.com/kangkyunghyun/boj-performance/actions/workflows/validation.yml"><img alt="Validation Status" src="https://img.shields.io/github/actions/workflow/status/kangkyunghyun/boj-performance/validation.yml?branch=main&style=flat-square&logo=githubactions&label=validation"></a>
+  <a href="https://chromewebstore.google.com/detail/boj-performance/bklabnmnfggmenngdnlndikconflcbij"><img alt="Chrome Web Store Users" src="https://img.shields.io/chrome-web-store/users/bklabnmnfggmenngdnlndikconflcbij?style=flat-square&logo=googlechrome&label=chrome%20users"></a>
+  <a href="https://chromewebstore.google.com/detail/boj-performance/bklabnmnfggmenngdnlndikconflcbij"><img alt="Chrome Web Store Version" src="https://img.shields.io/chrome-web-store/v/bklabnmnfggmenngdnlndikconflcbij?style=flat-square&logo=googlechrome&label=chrome%20version"></a>
+  <a href="https://chromewebstore.google.com/detail/boj-performance/bklabnmnfggmenngdnlndikconflcbij"><img alt="Chrome Web Store Rating" src="https://img.shields.io/chrome-web-store/rating/bklabnmnfggmenngdnlndikconflcbij?style=flat-square&logo=googlechrome&label=chrome%20rating"></a>
+  <a href="https://addons.mozilla.org/ko/firefox/addon/boj-performance"><img alt="Firefox Add-ons Users" src="https://img.shields.io/amo/users/boj-performance?style=flat-square&logo=firefoxbrowser&label=firefox%20users"></a>
+  <a href="https://addons.mozilla.org/ko/firefox/addon/boj-performance"><img alt="Firefox Add-ons Version" src="https://img.shields.io/amo/v/boj-performance?style=flat-square&logo=firefoxbrowser&label=firefox%20version"></a>
+  <a href="https://addons.mozilla.org/ko/firefox/addon/boj-performance"><img alt="Firefox Add-ons Weekly Downloads" src="https://img.shields.io/amo/dw/boj-performance?style=flat-square&logo=firefoxbrowser&label=firefox%20downloads"></a>
+</p>
 
 [![Chrome Web Store](./docs/chrome-web-store.png)](https://chromewebstore.google.com/detail/boj-performance/bklabnmnfggmenngdnlndikconflcbij)
 [![Naver Whale Store](./docs/whalestore-sm.png)](https://store.whale.naver.com/detail/clhhbjiamhmgpehbmmacbppbiiijccpd)
 [![Firefox Add-ons](./docs/firefox-sm.png)](https://addons.mozilla.org/ko/firefox/addon/boj-performance)
-
-소개와 업데이트 소식: https://kangkyunghyun.github.io/boj-performance/
 
 ## ✨ 주요 기능
 
