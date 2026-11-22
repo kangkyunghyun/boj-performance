@@ -12,6 +12,8 @@
 [![Naver Whale Store](./docs/whalestore-sm.png)](https://store.whale.naver.com/detail/clhhbjiamhmgpehbmmacbppbiiijccpd)
 [![Firefox Add-ons](./docs/firefox-sm.png)](https://addons.mozilla.org/ko/firefox/addon/boj-performance)
 
+소개와 업데이트 소식: https://kangkyunghyun.github.io/boj-performance/
+
 ## ✨ 주요 기능
 
 ### 📊 1. 성능 시각화 그래프

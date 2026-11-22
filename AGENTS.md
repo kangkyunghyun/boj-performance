@@ -22,9 +22,12 @@ src/
 scripts/            배포 자동화 전용. 확장에 들어가지 않음. Node 표준 라이브러리와 셸만
 ├── package.sh      버전·태그 검사 뒤 src/를 zip
 ├── publish-chrome.js   Chrome Web Store API 업로드·게시
-├── publish-firefox.js  AMO API 업로드·검증 대기·버전 생성
+├── publish-firefox.js  AMO API 업로드·검증 대기·버전 생성(노트는 Internal 제외)
 └── lib.js          환경 변수, API 호출 공용
-tests/              계산·표본 저장 순수 함수 테스트. node --test, 의존성 없음
+landing/            GitHub Pages 랜딩(소개, 캡처, 스토어 링크, 업데이트 소식). 빌드·외부 라이브러리 없음. 확장에 들어가지 않음
+└── landing.js      Releases API → 노트 표시. Internal 거르기를 publish-firefox.js도 require
+docs/releases/      버전별 릴리스 노트 원본 v<버전>.md. 형식은 그 폴더 README
+tests/              계산·표본 저장·노트 처리 순수 함수 테스트. node --test, 의존성 없음
 ├── load.js         src/js/*.js(libs 제외)를 manifest 순서대로 node:vm 한 컨텍스트에 읽음
 └── *.test.js
 ```
@@ -62,9 +65,9 @@ BOJ 로그인 세션이 필요한 확인은 Aside `--account u1`로 할 수 있�
 
 절차는 `create-release` 스킬.
 
-1. `release/<버전>` 또는 `hotfix/<버전>` 브랜치에서 `src/manifest.json`의 `version`을 올린다.
+1. `release/<버전>` 또는 `hotfix/<버전>` 브랜치에서 `src/manifest.json`의 `version`을 올리고 `docs/releases/v<버전>.md` 노트를 쓴다([형식](docs/releases/README.md)).
 2. 그 브랜치를 PR로 `main`에 병합하고 병합 커밋에 `v<버전>` 태그를 단다. 이어서 `main`을 `develop`에 되합치는 PR을 병합한다.
-3. 태그 push로 `release.yml`이 태그와 manifest 버전을 맞춰 보고 `boj-performance-v<버전>.zip`을 첨부한 GitHub Release(자동 릴리스 노트)를 만든다.
+3. 태그 push로 `release.yml`이 태그와 manifest 버전을 맞춰 보고 `boj-performance-v<버전>.zip`을 첨부하고 노트 파일을 본문으로 한 GitHub Release를 만든다. 노트 파일이 없으면 실패한다. 랜딩 업데이트 소식은 이 Release를 읽는다.
 4. Actions에서 `main`을 대상으로 게시 워크플로를 수동 실행한다. 입력은 `version`과 확인 문구다.
    - `Publish Chrome Web Store`: 확인 문구 `publish-chrome`
    - `Publish Firefox Add-ons`: 확인 문구 `publish-firefox`
@@ -127,8 +130,9 @@ git flow를 쓴다.
 | `.github/workflows/validation.yml` | `node --test`, `src/` zip에 `manifest.json`이 있는지 | `develop`, `main` 대상 PR과 push | 실패하면 실패 |
 | `.github/workflows/security.yml` | gitleaks 비밀값 검사 | `develop`, `main` 대상 PR과 push | 찾으면 실패 |
 | `.github/workflows/codeql.yml` | CodeQL(JavaScript, Actions). `src/js/libs/chart.js` 제외 | `develop`, `main` 대상 PR, `develop` push, 주 1회 | Security 탭에 보고만 하고 PR을 막지 않음 |
-| `.github/workflows/release.yml` | 태그와 manifest 버전 일치, zip, GitHub Release | `v*.*.*` 태그 push | 버전이 다르면 실패 |
+| `.github/workflows/release.yml` | 태그와 manifest 버전 일치, zip, 노트 파일 본문의 GitHub Release | `v*.*.*` 태그 push | 버전이 다르거나 노트 파일이 없으면 실패 |
 | `.github/workflows/publish-chrome.yml` | `main`, 확인 문구, 태그가 `main` 최신 커밋인지 확인 뒤 Chrome Web Store 업로드·게시 | 수동 | 심사 요청까지. 공개는 심사 뒤 |
-| `.github/workflows/publish-firefox.yml` | 같은 확인 뒤 AMO 업로드·검증 대기·버전 생성 | 수동 | 심사 요청까지. 공개는 심사 뒤 |
+| `.github/workflows/publish-firefox.yml` | 같은 확인 뒤 AMO 업로드·검증 대기·버전 생성. 노트는 Internal을 뺀 `docs/releases/v<버전>.md` | 수동 | 심사 요청까지. 공개는 심사 뒤 |
+| `.github/workflows/pages.yml` | `landing/`을 GitHub Pages에 배포 | `main` push 중 `landing/**`·`pages.yml` 변경, 수동(`main`만. `github-pages` 환경이 `main`만 허용) | 배포 실패하면 실패 |
 
 빌드 CI는 없다.
