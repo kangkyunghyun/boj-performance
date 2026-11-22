@@ -4,11 +4,18 @@
  */
 
 /* 툴팁과 아이콘을 감싸는 래퍼 */
+/* 키보드 초점을 받도록 button이지만 모양은 이전 div와 같게 */
 .tooltip-wrapper {
   position: relative;
   display: inline-flex;
   align-items: center;
   cursor: help;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
 }
 
 /* 툴팁 박스 (기본적으로 숨김) */
@@ -71,8 +78,9 @@
   z-index: -1;
 }
 
-/* 호버 시 툴팁 표시 */
-.tooltip-wrapper:hover .tooltip-text {
+/* 호버나 키보드 초점 시 툴팁 표시 */
+.tooltip-wrapper:hover .tooltip-text,
+.tooltip-wrapper:focus-visible .tooltip-text {
   visibility: visible;
   opacity: 1;
 }

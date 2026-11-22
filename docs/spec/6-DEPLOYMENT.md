@@ -10,8 +10,9 @@
 |---|---|
 | 빌드 | 없음<br>확장 소스 폴더가 그대로 배포물 |
 | 버전 | `manifest.json`의 `version`<br>스토어에 제출할 때마다 올림 |
-| 패키지 | `main`의 버전 태그 커밋에서 확장 소스 폴더를 zip 하나로 묶음<br>zip 최상위에 `manifest.json`이 있음 |
+| 패키지 | `main`의 버전 태그 `v<버전>`을 push하면 태그와 `version`이 같은지 확인하고 확장 소스 폴더를 zip 하나로 묶음<br>zip 최상위에 `manifest.json`이 있음<br>zip을 첨부한 GitHub Release를 만듦 |
 | 제출 | 같은 zip을 Chrome 웹 스토어, 네이버 웨일 스토어, Firefox Add-ons에 각각 제출<br>스토어별로 `manifest.json`을 고치지 않음 |
+| 제출 방법 | Chrome, Firefox: 사람이 버전과 확인 문구를 넣어 시작하는 자동 제출<br>`main`의 최신 커밋이 그 버전 태그일 때만 제출<br>웨일: 공개 API가 없어 사람이 GitHub Release의 zip을 올림<br>자동 제출이 실패하면 같은 태그 커밋에서 zip을 만들어 사람이 올림 |
 | 반영 | 스토어별 심사 뒤 설치한 사용자에게 업데이트됨 |
 
 <br>

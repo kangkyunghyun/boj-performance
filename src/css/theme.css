@@ -47,3 +47,7 @@
 .boj-graph-dark .tooltip-wrapper:hover .info-icon {
   fill: #888;
 }
+
+.boj-graph-dark .lang-line {
+  color: #b0b0b0;
+}

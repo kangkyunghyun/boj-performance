@@ -11,17 +11,22 @@ src/
 ├── manifest.json   content script 주입 범위, 권한
 ├── rules.json      declarativeNetRequest: /status 요청의 Sec-Fetch-* 헤더를 navigate로 위조
 ├── js/             전역 함수 공유. manifest의 js 배열 순서가 곧 의존 순서
-│   ├── utils.js    로그인 ID, 언어명, 다크 모드 감지
+│   ├── utils.js    로그인 ID, 언어명·언어 필터 값, 다크 모드 감지
 │   ├── api.js      /status HTML을 fetch → DOMParser로 크롤링
-│   ├── data.js     빈도 집계, 상위 % 계산
+│   ├── data.js     내 기록 선택, 분포 구간, 상위 % 계산
 │   ├── ui.js       카드 DOM 생성·삽입
 │   ├── graph.js    Chart.js 렌더링
 │   ├── main.js     진입점
 │   └── libs/chart.js  Chart.js v4.4.1 번들. 수정 금지
 └── css/            layout / card / tooltip / theme(다크)
+scripts/            배포 자동화 전용. 확장에 들어가지 않음. Node 표준 라이브러리와 셸만
+├── package.sh      버전·태그 검사 뒤 src/를 zip
+├── publish-chrome.js   Chrome Web Store API 업로드·게시
+├── publish-firefox.js  AMO API 업로드·검증 대기·버전 생성
+└── lib.js          환경 변수, API 호출 공용
 ```
 
-흐름: `problem_id` 있고 `contest_id` 없는 status 페이지 → 로그인 ID 확인 → 내 최고 기록 조회(첫 페이지) → 카드 삽입 → 정답 제출 최대 10페이지(약 200건) 순차 크롤링 → 차트.
+흐름: `problem_id` 있고 `contest_id` 없는 status 페이지 → 로그인 ID 확인 → 내 정답 제출 첫 페이지 조회 → 비교 언어(필터가 없으면 가장 최근 정답 제출의 언어)와 내 최고 기록 결정 → 카드 삽입 → 정답 제출 최대 10페이지(약 200건) 순차 크롤링 → 차트. 표본은 탭의 `sessionStorage`에 두고 같은 탭에서 다시 열면 새 제출만 받아 붙인다([4-3-2](docs/spec/4-3-STATE-MANAGEMENT.md#4-3-2-세션-저장소)).
 
 ## BOJ 의존점 (깨지면 여기부터 본다)
 
@@ -33,7 +38,7 @@ src/
 
 ## 규칙
 
-- 의존성·빌드 도구·번들러를 추가하지 않는다. Vanilla JS 전역 함수 구조를 유지한다.
+- 의존성·빌드 도구·번들러를 추가하지 않는다. Vanilla JS 전역 함수 구조를 유지한다. `scripts/`도 Node 표준 라이브러리만 쓰고 `package.json`을 두지 않는다.
 - 새 JS 파일은 `manifest.json`의 `js` 배열에 의존 순서대로 넣는다.
 - BOJ 요청 수를 늘리지 않는다. 페이지 1회당 최대 11회(내 기록 1 + 크롤링 10)가 상한이다.
 - `innerHTML`에 넣는 값은 BOJ DOM 출처로 한정한다. 외부 입력을 넣지 않는다.
@@ -54,8 +59,23 @@ BOJ 로그인 세션이 필요한 확인은 Aside `--account u1`로 할 수 있�
 
 1. `release/<버전>` 또는 `hotfix/<버전>` 브랜치에서 `src/manifest.json`의 `version`을 올린다.
 2. 그 브랜치를 PR로 `main`에 병합하고 병합 커밋에 `v<버전>` 태그를 단다. 이어서 `main`을 `develop`에 되합치는 PR을 병합한다.
-3. 태그 커밋에서 `cd src && zip -r ../boj-performance-<version>.zip . -x '.*'` — zip 루트에 `manifest.json`이 있어야 한다. zip은 커밋하지 않는다.
-4. 스토어별 업로드: [Chrome](https://chromewebstore.google.com/detail/boj-performance/bklabnmnfggmenngdnlndikconflcbij), [Whale](https://store.whale.naver.com/detail/clhhbjiamhmgpehbmmacbppbiiijccpd), [Firefox](https://addons.mozilla.org/ko/firefox/addon/boj-performance).
+3. 태그 push로 `release.yml`이 태그와 manifest 버전을 맞춰 보고 `boj-performance-v<버전>.zip`을 첨부한 GitHub Release(자동 릴리스 노트)를 만든다.
+4. Actions에서 `main`을 대상으로 게시 워크플로를 수동 실행한다. 입력은 `version`과 확인 문구다.
+   - `Publish Chrome Web Store`: 확인 문구 `publish-chrome`
+   - `Publish Firefox Add-ons`: 확인 문구 `publish-firefox`
+   - CLI: `gh workflow run publish-chrome.yml --ref main -f version=<버전> -f confirm_publish=publish-chrome`
+5. 웨일은 API가 없다. GitHub Release의 zip을 손으로 올린다.
+6. 자동화가 실패하면 `create-release` 스킬의 "자동화가 실패했을 때"대로 로컬에서 zip을 만들어 손으로 올린다.
+
+스토어: [Chrome](https://chromewebstore.google.com/detail/boj-performance/bklabnmnfggmenngdnlndikconflcbij), [Whale](https://store.whale.naver.com/detail/clhhbjiamhmgpehbmmacbppbiiijccpd), [Firefox](https://addons.mozilla.org/ko/firefox/addon/boj-performance).
+
+게시 워크플로가 쓰는 저장소 Secrets(Settings → Secrets and variables → Actions):
+
+| 이름 | 용도 |
+|---|---|
+| `CHROME_CLIENT_ID`, `CHROME_CLIENT_SECRET`, `CHROME_REFRESH_TOKEN` | Chrome Web Store API OAuth |
+| `CHROME_PUBLISHER_ID` | Chrome Web Store 게시자 ID |
+| `FIREFOX_JWT_ISSUER`, `FIREFOX_JWT_SECRET` | AMO API 키 |
 
 ## 브랜치와 커밋
 
@@ -77,6 +97,7 @@ git flow를 쓴다.
 - 커밋 메시지: `<type>: <한글 설명>`. type은 `feat`, `fix`, `refactor`, `docs`, `chore`, `ci`.
   - 예: `fix: 백준 도메인 변경(acmicpc.net) 대응`
   - 에이전트가 커밋하면 끝에 빈 줄과 `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`를 붙인다.
+- 이슈 제목: 커밋 형식 `<type>: <한글 설명>`. 예: `fix: 채점 현황 카드 미표시`
 - PR 제목: 커밋 형식 뒤에 ` (#이슈번호)`. 예: `fix: 백준 도메인 변경(acmicpc.net) 대응 (#12)`
 - 커밋·푸시·PR 생성·병합·태그는 요청받았을 때만 한다.
 
@@ -91,7 +112,7 @@ git flow를 쓴다.
 | `create-commit` | 규칙에 맞는 커밋 |
 | `create-pr` | Draft PR 생성·갱신, 머지 뒤 로컬 브랜치 정리 |
 | `request-codex-review` | 로컬 Codex CLI 리뷰와 지적 판단 |
-| `create-release` | release·hotfix, 태그, 되합치기, zip |
+| `create-release` | release·hotfix, 태그, 되합치기, 스토어 게시 |
 | `boj-diagnose` | "작동 안 함"일 때 BOJ 쪽 변경 진단 |
 
 ## CI
@@ -100,5 +121,8 @@ git flow를 쓴다.
 |---|---|---|---|
 | `.github/workflows/security.yml` | gitleaks 비밀값 검사 | `develop`, `main` 대상 PR과 push | 찾으면 실패 |
 | `.github/workflows/codeql.yml` | CodeQL(JavaScript, Actions). `src/js/libs/chart.js` 제외 | `develop`, `main` 대상 PR, `develop` push, 주 1회 | Security 탭에 보고만 하고 PR을 막지 않음 |
+| `.github/workflows/release.yml` | 태그와 manifest 버전 일치, zip, GitHub Release | `v*.*.*` 태그 push | 버전이 다르면 실패 |
+| `.github/workflows/publish-chrome.yml` | `main`, 확인 문구, 태그가 `main` 최신 커밋인지 확인 뒤 Chrome Web Store 업로드·게시 | 수동 | 심사 요청까지. 공개는 심사 뒤 |
+| `.github/workflows/publish-firefox.yml` | 같은 확인 뒤 AMO 업로드·검증 대기·버전 생성 | 수동 | 심사 요청까지. 공개는 심사 뒤 |
 
 빌드와 테스트 CI는 없다.
