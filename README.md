@@ -1,7 +1,6 @@
 # <img align="left" src="src/icons/icon48.png"/>BOJ Performance
 
 백준 온라인 저지(BOJ)의 채점 현황 페이지에서 내 코드의 실행 시간과 메모리 위치를 직관적인 그래프로 확인할 수 있는 브라우저 확장입니다.
-2026년 11월 다시 열린 백준(`acmicpc.net`)에서 동작합니다.
 [홈페이지](https://kangkyunghyun.github.io/boj-performance/)에서 사용법과 업데이트 소식을 볼 수 있습니다.
 
 <p>
