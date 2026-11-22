@@ -27,6 +27,7 @@ scripts/            배포 자동화 전용. 확장에 들어가지 않음. Node
 landing/            GitHub Pages 랜딩(소개, 캡처, 스토어 링크, 업데이트 소식). 빌드·외부 라이브러리 없음. 확장에 들어가지 않음
 └── landing.js      Releases API → 노트 표시. Internal 거르기를 publish-firefox.js도 require
 docs/releases/      버전별 릴리스 노트 원본 v<버전>.md. 형식은 그 폴더 README
+docs/copy/          스토어 설명·커뮤니티 홍보글 원본. 붙여 넣기와 게시는 사람이 함
 tests/              계산·표본 저장·노트 처리 순수 함수 테스트. node --test, 의존성 없음
 ├── load.js         src/js/*.js(libs 제외)를 manifest 순서대로 node:vm 한 컨텍스트에 읽음
 └── *.test.js
@@ -65,7 +66,7 @@ BOJ 로그인 세션이 필요한 확인은 Aside `--account u1`로 할 수 있�
 
 절차는 `create-release` 스킬.
 
-1. `release/<버전>` 또는 `hotfix/<버전>` 브랜치에서 `src/manifest.json`의 `version`을 올리고 `docs/releases/v<버전>.md` 노트를 쓴다([형식](docs/releases/README.md)).
+1. `release/<버전>` 또는 `hotfix/<버전>` 브랜치에서 `src/manifest.json`의 `version`을 올리고 `docs/releases/v<버전>.md` 노트를 쓴다([형식](docs/releases/README.md)). `release-copy` 스킬로 `docs/copy/` 스토어 문구도 갱신한다.
 2. 그 브랜치를 PR로 `main`에 병합하고 병합 커밋에 `v<버전>` 태그를 단다. 이어서 `main`을 `develop`에 되합치는 PR을 병합한다.
 3. 태그 push로 `release.yml`이 태그와 manifest 버전을 맞춰 보고 `boj-performance-v<버전>.zip`을 첨부하고 노트 파일을 본문으로 한 GitHub Release를 만든다. 노트 파일이 없으면 실패한다. 랜딩 업데이트 소식은 이 Release를 읽는다.
 4. Actions에서 `main`을 대상으로 게시 워크플로를 수동 실행한다. 입력은 `version`과 확인 문구다.
@@ -121,6 +122,7 @@ git flow를 쓴다.
 | `create-pr` | Draft PR 생성·갱신, 머지 뒤 로컬 브랜치 정리 |
 | `request-codex-review` | 로컬 Codex CLI 리뷰와 지적 판단 |
 | `create-release` | release·hotfix, 태그, 되합치기, 스토어 게시 |
+| `release-copy` | 릴리스 노트로 스토어 설명·홍보글(`docs/copy/`) 갱신 |
 | `boj-diagnose` | "작동 안 함"일 때 BOJ 쪽 변경 진단 |
 
 ## CI
