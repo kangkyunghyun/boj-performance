@@ -4,7 +4,7 @@
 
 ## 구조
 
-빌드 도구, 패키지 매니저, 테스트가 없다. `src/`가 곧 배포물이다.
+빌드 도구와 패키지 매니저가 없다. `src/`가 곧 배포물이다.
 
 ```
 src/
@@ -24,6 +24,9 @@ scripts/            배포 자동화 전용. 확장에 들어가지 않음. Node
 ├── publish-chrome.js   Chrome Web Store API 업로드·게시
 ├── publish-firefox.js  AMO API 업로드·검증 대기·버전 생성
 └── lib.js          환경 변수, API 호출 공용
+tests/              계산·표본 저장 순수 함수 테스트. node --test, 의존성 없음
+├── load.js         src/js/*.js(libs 제외)를 manifest 순서대로 node:vm 한 컨텍스트에 읽음
+└── *.test.js
 ```
 
 흐름: `problem_id` 있고 `contest_id` 없는 status 페이지 → 로그인 ID 확인 → 내 정답 제출 첫 페이지 조회 → 비교 언어(필터가 없으면 가장 최근 정답 제출의 언어)와 내 최고 기록 결정 → 카드 삽입 → 정답 제출 최대 10페이지(약 200건) 순차 크롤링 → 차트. 표본은 탭의 `sessionStorage`에 두고 같은 탭에서 다시 열면 새 제출만 받아 붙인다([4-3-2](docs/spec/4-3-STATE-MANAGEMENT.md#4-3-2-세션-저장소)).
@@ -38,14 +41,16 @@ scripts/            배포 자동화 전용. 확장에 들어가지 않음. Node
 
 ## 규칙
 
-- 의존성·빌드 도구·번들러를 추가하지 않는다. Vanilla JS 전역 함수 구조를 유지한다. `scripts/`도 Node 표준 라이브러리만 쓰고 `package.json`을 두지 않는다.
+- 의존성·빌드 도구·번들러를 추가하지 않는다. Vanilla JS 전역 함수 구조를 유지한다. `scripts/`, `tests/`도 Node 표준 라이브러리만 쓰고 `package.json`을 두지 않는다.
 - 새 JS 파일은 `manifest.json`의 `js` 배열에 의존 순서대로 넣는다.
 - BOJ 요청 수를 늘리지 않는다. 페이지 1회당 최대 11회(내 기록 1 + 크롤링 10)가 상한이다.
 - `innerHTML`에 넣는 값은 BOJ DOM 출처로 한정한다. 외부 입력을 넣지 않는다.
 
 ## 검증
 
-자동 테스트가 없으므로 실제 브라우저에서 확인한다.
+계산과 표본 저장 함수는 `node --test`(저장소 루트, 인자 없이)로 확인한다. BOJ에 요청하지 않는다. 어떤 검증 케이스가 자동인지는 [5-1](docs/spec/5-1-VERIFICATION.md). 테스트는 확장 코드를 바꾸지 않고 `tests/load.js`로 전역 함수를 꺼낸다.
+
+DOM과 BOJ 응답에 기대는 부분(결과 표 읽기, 카드, 차트, 테마)은 실제 브라우저에서 확인한다.
 
 1. `chrome://extensions` → 개발자 모드 → 압축해제된 확장 로드 → `src/` 선택(수정 후엔 새로고침).
 2. 로그인 상태에서 내 정답 기록이 있는 문제의 status 페이지를 연다. 예: `https://acmicpc.net/status?problem_id=1000`
@@ -119,10 +124,11 @@ git flow를 쓴다.
 
 | 워크플로 | 검사 | 실행 | 결과 |
 |---|---|---|---|
+| `.github/workflows/validation.yml` | `node --test`, `src/` zip에 `manifest.json`이 있는지 | `develop`, `main` 대상 PR과 push | 실패하면 실패 |
 | `.github/workflows/security.yml` | gitleaks 비밀값 검사 | `develop`, `main` 대상 PR과 push | 찾으면 실패 |
 | `.github/workflows/codeql.yml` | CodeQL(JavaScript, Actions). `src/js/libs/chart.js` 제외 | `develop`, `main` 대상 PR, `develop` push, 주 1회 | Security 탭에 보고만 하고 PR을 막지 않음 |
 | `.github/workflows/release.yml` | 태그와 manifest 버전 일치, zip, GitHub Release | `v*.*.*` 태그 push | 버전이 다르면 실패 |
 | `.github/workflows/publish-chrome.yml` | `main`, 확인 문구, 태그가 `main` 최신 커밋인지 확인 뒤 Chrome Web Store 업로드·게시 | 수동 | 심사 요청까지. 공개는 심사 뒤 |
 | `.github/workflows/publish-firefox.yml` | 같은 확인 뒤 AMO 업로드·검증 대기·버전 생성 | 수동 | 심사 요청까지. 공개는 심사 뒤 |
 
-빌드와 테스트 CI는 없다.
+빌드 CI는 없다.
