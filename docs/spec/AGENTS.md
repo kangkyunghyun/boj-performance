@@ -50,6 +50,7 @@
 | 4-2 요청 헤더 규칙, 4-1-3 요청 헤더 | [`src/rules.json`](../../src/rules.json) |
 | 4-1-2 도메인과 권한, 4-2-2 의존 순서, 6-1 버전, 6-2 Firefox 조건 | [`src/manifest.json`](../../src/manifest.json)의 `content_scripts`(`matches`, `js` 배열 순서), `host_permissions`, `permissions`, `version`, `browser_specific_settings` |
 | 6-1 패키지와 제출 방법 | [`.github/workflows/`](../../.github/workflows/)의 `release.yml`, `publish-chrome.yml`, `publish-firefox.yml`, [`scripts/`](../../scripts/) |
+| 5-1 자동 테스트 | [`tests/`](../../tests/). [`.github/workflows/validation.yml`](../../.github/workflows/validation.yml)이 PR과 push에서 실행 |
 | 3-3-1 배치, 3-3-3 안내 툴팁 표시(마우스, 키보드 초점), 3-3-5 카드와 툴팁 색 | [`src/css/`](../../src/css/)의 `layout.css`, `card.css`, `tooltip.css`, `theme.css`(어두운 테마) |
 
 <br>
