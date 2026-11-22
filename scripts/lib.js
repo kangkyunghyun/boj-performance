@@ -9,11 +9,11 @@ function getRequiredEnv(name) {
   return value;
 }
 
-// 업로드할 zip 경로. 없으면 네트워크 호출 전에 멈춘다.
+// 업로드할 zip이나 릴리스 노트 경로. 없으면 네트워크 호출 전에 멈춘다.
 function getPackageFile(envName) {
   const packageFile = getRequiredEnv(envName);
   if (!fs.existsSync(packageFile)) {
-    throw new Error(`Package file does not exist: ${packageFile}`);
+    throw new Error(`${envName} file does not exist: ${packageFile}`);
   }
   return packageFile;
 }

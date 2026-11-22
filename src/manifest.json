@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
   "name": "BOJ Performance",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "백준 온라인 저지(BOJ) 채점 현황에 내 코드의 성능(실행 시간, 메모리) 위치를 그래프로 시각화합니다.",
+  "homepage_url": "https://kangkyunghyun.github.io/boj-performance/",
   "permissions": ["declarativeNetRequest"],
   "declarative_net_request": {
     "rule_resources": [

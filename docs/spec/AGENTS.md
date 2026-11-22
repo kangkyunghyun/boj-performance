@@ -17,7 +17,7 @@
 | [4-3-STATE-MANAGEMENT.md](4-3-STATE-MANAGEMENT.md) | 4-3 상태 관리 |
 | [4-4-EXECUTION.md](4-4-EXECUTION.md) | 4-4 실행. 요청 순서, BOJ 쪽 변경과 증상 |
 | [5-1-VERIFICATION.md](5-1-VERIFICATION.md) | 5-1 검증. 요구사항 대응, 검증 케이스 |
-| [6-DEPLOYMENT.md](6-DEPLOYMENT.md) | 6 배포. 스토어 제출, 호환 조건, 되돌리기 |
+| [6-DEPLOYMENT.md](6-DEPLOYMENT.md) | 6 배포. 릴리스 노트, 스토어 제출, 호환 조건, 되돌리기, 랜딩 페이지 |
 | [DECISIONS.md](DECISIONS.md) | 결정 기록 |
 
 <br>
@@ -33,6 +33,7 @@
 | 테마 판정 변경 | [2-2-4](2-2-REQUIREMENTS.md#2-2-4-테마), [4-1-5](4-1-CONTRACT.md#4-1-5-boj-extended-테마-설정), [4-3](4-3-STATE-MANAGEMENT.md) |
 | 구성 요소나 파일 추가 | [4-2](4-2-COMPONENT-ARCHITECTURE.md) |
 | 릴리스 | [6](6-DEPLOYMENT.md), 저장소 루트 [AGENTS.md](../../AGENTS.md)의 릴리스 |
+| 릴리스 노트 문구, 랜딩 페이지 | [6-1](6-DEPLOYMENT.md#6-1-배포-경로), [6-5](6-DEPLOYMENT.md#6-5-랜딩-페이지), [5-1-4](5-1-VERIFICATION.md#5-1-4-릴리스-노트와-랜딩) |
 
 <br>
 
@@ -48,8 +49,11 @@
 | 4-2 그래프, 3-3-3 툴팁 문구, 3-3-4 그래프, 3-3-5 막대와 축 색, 3-3-6 안내 아이콘과 그래프 이름 | [`src/js/graph.js`](../../src/js/graph.js) |
 | 4-2 차트 라이브러리 | [`src/js/libs/chart.js`](../../src/js/libs/chart.js). Chart.js v4.4.1 번들, 수정하지 않음 |
 | 4-2 요청 헤더 규칙, 4-1-3 요청 헤더 | [`src/rules.json`](../../src/rules.json) |
-| 4-1-2 도메인과 권한, 4-2-2 의존 순서, 6-1 버전, 6-2 Firefox 조건 | [`src/manifest.json`](../../src/manifest.json)의 `content_scripts`(`matches`, `js` 배열 순서), `host_permissions`, `permissions`, `version`, `browser_specific_settings` |
+| 4-1-2 도메인과 권한, 4-1-6 외부 링크, 4-2-2 의존 순서, 6-1 버전, 6-2 Firefox 조건 | [`src/manifest.json`](../../src/manifest.json)의 `content_scripts`(`matches`, `js` 배열 순서), `host_permissions`, `permissions`, `homepage_url`, `version`, `browser_specific_settings` |
 | 6-1 패키지와 제출 방법 | [`.github/workflows/`](../../.github/workflows/)의 `release.yml`, `publish-chrome.yml`, `publish-firefox.yml`, [`scripts/`](../../scripts/) |
+| 6-1 릴리스 노트 | [`docs/releases/`](../releases/)의 `v<버전>.md`, 형식은 [`docs/releases/README.md`](../releases/README.md) |
+| 6-5 랜딩 페이지, 6-1 Internal 거르기 | [`landing/`](../../landing/). 거르기와 본문 나누기는 `landing.js`의 `stripInternalSection`, `parseReleaseBody`이고 `scripts/publish-firefox.js`가 같은 함수를 씀<br>배포는 [`.github/workflows/pages.yml`](../../.github/workflows/pages.yml) |
+| 5-1 자동 테스트 | [`tests/`](../../tests/). [`.github/workflows/validation.yml`](../../.github/workflows/validation.yml)이 PR과 push에서 실행 |
 | 3-3-1 배치, 3-3-3 안내 툴팁 표시(마우스, 키보드 초점), 3-3-5 카드와 툴팁 색 | [`src/css/`](../../src/css/)의 `layout.css`, `card.css`, `tooltip.css`, `theme.css`(어두운 테마) |
 
 <br>
