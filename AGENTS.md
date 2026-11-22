@@ -66,7 +66,7 @@ BOJ 로그인 세션이 필요한 확인은 Aside `--account u1`로 할 수 있�
 
 절차는 `create-release` 스킬.
 
-1. `release/<버전>` 또는 `hotfix/<버전>` 브랜치에서 `src/manifest.json`의 `version`을 올리고 `docs/releases/v<버전>.md` 노트를 쓴다([형식](docs/releases/README.md)). `release-copy` 스킬로 `docs/copy/` 스토어 문구도 갱신한다.
+1. `release/<버전>` 또는 `hotfix/<버전>` 브랜치에서 `src/manifest.json`의 `version`을 올리고 `docs/releases/v<버전>.md` 노트를 쓴다([형식](docs/releases/README.md)). 계속 알릴 기능이 생겼으면 `release-copy` 스킬로 `docs/copy/` 문구의 기능 목록에 더한다. 스토어 설명란에 버전별 변경은 쓰지 않는다.
 2. 그 브랜치를 PR로 `main`에 병합하고 병합 커밋에 `v<버전>` 태그를 단다. 이어서 `main`을 `develop`에 되합치는 PR을 병합한다.
 3. 태그 push로 `release.yml`이 태그와 manifest 버전을 맞춰 보고 `boj-performance-v<버전>.zip`을 첨부하고 노트 파일을 본문으로 한 GitHub Release를 만든다. 노트 파일이 없으면 실패한다. 랜딩 업데이트 소식은 이 Release를 읽는다.
 4. Actions에서 `main`을 대상으로 게시 워크플로를 수동 실행한다. 입력은 `version`과 확인 문구다.
@@ -122,7 +122,7 @@ git flow를 쓴다.
 | `create-pr` | Draft PR 생성·갱신, 머지 뒤 로컬 브랜치 정리 |
 | `request-codex-review` | 로컬 Codex CLI 리뷰와 지적 판단 |
 | `create-release` | release·hotfix, 태그, 되합치기, 스토어 게시 |
-| `release-copy` | 릴리스 노트로 스토어 설명·홍보글(`docs/copy/`) 갱신 |
+| `release-copy` | 릴리스 노트에서 계속 알릴 기능을 골라 스토어 설명·홍보글(`docs/copy/`)에 반영 |
 | `boj-diagnose` | "작동 안 함"일 때 BOJ 쪽 변경 진단 |
 
 ## CI
