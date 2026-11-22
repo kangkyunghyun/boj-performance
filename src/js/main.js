@@ -74,7 +74,7 @@ async function main() {
     ]) {
       const chartData = processData(submissions, type, myRecord);
       const stats = calculatePercentile(submissions, type, myRecord);
-      drawChart(card, chartData, type, stats, dark);
+      drawChart(card, chartData, type, stats, dark, langName);
     }
   };
 
