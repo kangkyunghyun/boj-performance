@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>BOJ Performance</title>
+  <meta name="description" content="백준 온라인 저지(BOJ) 채점 현황에 내 코드의 실행 시간과 메모리 위치를 그래프로 보여주는 브라우저 확장">
+  <link rel="icon" href="assets/icon.png">
+  <link rel="stylesheet" href="landing.css">
+</head>
+<body>
+  <main>
+    <header>
+      <img src="assets/icon.png" alt="" width="64" height="64">
+      <h1>BOJ Performance</h1>
+      <p class="lead">백준 채점 현황에서 내 코드의 실행 시간과 메모리가<br>다른 정답 제출 사이 어디쯤인지 그래프로 보여줍니다.</p>
+      <nav class="stores" aria-label="설치">
+        <a href="https://chromewebstore.google.com/detail/boj-performance/bklabnmnfggmenngdnlndikconflcbij">Chrome 웹 스토어</a>
+        <a href="https://store.whale.naver.com/detail/clhhbjiamhmgpehbmmacbppbiiijccpd">웨일 스토어</a>
+        <a href="https://addons.mozilla.org/ko/firefox/addon/boj-performance">Firefox Add-ons</a>
+      </nav>
+    </header>
+
+    <section aria-labelledby="where">
+      <h2 id="where">어디서 보이나요</h2>
+      <p>로그인한 상태로 내가 맞은 문제의 <strong>채점 현황</strong>(<code>acmicpc.net/status?problem_id=…</code>)을 열면 결과 표 위에 카드 두 개가 생깁니다.</p>
+      <figure>
+        <img src="assets/screenshot.png" width="1400" height="538" alt="채점 현황 결과 표 위의 실행 시간 카드와 메모리 카드. C++17 기준, 실행 시간 57 ms 상위 76.92%, 메모리 11616 KB 상위 92.31%, 각 카드 아래에 분포 막대 그래프와 강조된 내 막대">
+      </figure>
+      <ul>
+        <li>실행 시간과 메모리 카드에 내 최고 기록, 상위 비율, 최근 정답 제출 최대 200건의 분포를 보여줍니다.</li>
+        <li>언어 필터를 고르지 않으면 내가 가장 최근에 맞은 언어로 비교하고, 다른 언어로도 맞았다면 카드 위 링크로 바꿀 수 있습니다.</li>
+        <li>BOJ 말고 다른 서버로는 아무것도 보내지 않습니다.</li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="updates">
+      <h2 id="updates">업데이트 소식</h2>
+      <p id="release-status" role="status">불러오는 중…</p>
+      <div id="release-list" class="releases"></div>
+      <p><a href="https://github.com/kangkyunghyun/boj-performance/releases">GitHub에서 전체 릴리스 보기</a></p>
+    </section>
+
+    <footer>
+      <a href="https://github.com/kangkyunghyun/boj-performance">GitHub</a>
+      ·
+      <a href="https://github.com/kangkyunghyun/boj-performance/issues">버그 제보·기능 제안</a>
+    </footer>
+  </main>
+  <script src="landing.js"></script>
+</body>
+</html>

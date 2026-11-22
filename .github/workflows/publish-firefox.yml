@@ -48,6 +48,7 @@ jobs:
       - name: Publish
         env:
           FIREFOX_PACKAGE_FILE: boj-performance-v${{ inputs.version }}.zip
+          FIREFOX_RELEASE_NOTES_FILE: docs/releases/v${{ inputs.version }}.md
           FIREFOX_ADDON_ID: boj-performance
           FIREFOX_LICENSE: MIT
           FIREFOX_JWT_ISSUER: ${{ secrets.FIREFOX_JWT_ISSUER }}

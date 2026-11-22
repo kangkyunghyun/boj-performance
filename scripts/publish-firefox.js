@@ -4,6 +4,8 @@ const fs = require("fs");
 const path = require("path");
 
 const { getPackageFile, getRequiredEnv, requestJson } = require("./lib");
+// 랜딩과 같은 규칙으로 Internal 절을 거른다. 규칙은 landing/landing.js 한 곳에 둔다.
+const { stripInternalSection } = require("../landing/landing.js");
 
 const API = "https://addons.mozilla.org/api/v5";
 const POLL_INTERVAL_MS = 10000;
@@ -72,6 +74,10 @@ async function main() {
     const addonId = getRequiredEnv("FIREFOX_ADDON_ID");
     const license = getRequiredEnv("FIREFOX_LICENSE");
     const packageFile = getPackageFile("FIREFOX_PACKAGE_FILE");
+    // 업로드 전에 노트부터 읽는다. 없으면 AMO에 아무것도 올리지 않고 멈춘다.
+    const releaseNotes = stripInternalSection(
+      await fs.promises.readFile(getPackageFile("FIREFOX_RELEASE_NOTES_FILE"), "utf8"),
+    ).trim();
     const credentials = {
       issuer: getRequiredEnv("FIREFOX_JWT_ISSUER"),
       secret: getRequiredEnv("FIREFOX_JWT_SECRET"),
@@ -99,14 +105,16 @@ async function main() {
 
     await waitForValidUpload(credentials, uploadResponse.uuid);
 
-    // release_notes는 선택 항목이라 보내지 않는다. 변경 내역은 GitHub Release에 있다.
+    // Internal만 있으면 노트를 보내지 않는다(AMO에서 선택 항목). 애드온 기본 언어가 ko다.
+    const versionBody = { upload: uploadResponse.uuid, license };
+    if (releaseNotes) versionBody.release_notes = { ko: releaseNotes };
     const versionResponse = await authorizedRequest(
       "Firefox version create",
       `${API}/addons/addon/${encodeURIComponent(addonId)}/versions/`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ upload: uploadResponse.uuid, license }),
+        body: JSON.stringify(versionBody),
       },
       credentials,
     );

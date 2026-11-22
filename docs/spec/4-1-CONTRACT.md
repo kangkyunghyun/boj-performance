@@ -99,3 +99,13 @@ BOJ는 `Sec-Fetch-Mode: cors` 요청에 상태 200과 빈 본문을 준다. `Sec
 | 설정 없음일 때 쓰는 값 | 브라우저의 `prefers-color-scheme: dark` 일치 여부 |
 
 BOJ Performance는 이 키를 읽기만 한다.
+
+<br>
+
+### 4-1-6 외부 링크
+
+| 항목 | 값 |
+|---|---|
+| manifest `homepage_url` | `https://kangkyunghyun.github.io/boj-performance/`<br>랜딩 페이지([6-5](6-DEPLOYMENT.md#6-5-랜딩-페이지)) |
+| 보이는 곳 | 브라우저의 확장 관리 화면, 스토어의 홈페이지 링크 |
+| 요청 | 확장은 이 주소에 요청하지 않음. 사용자가 링크를 눌렀을 때만 열림 |
