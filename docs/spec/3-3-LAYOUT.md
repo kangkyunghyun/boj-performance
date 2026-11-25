@@ -6,7 +6,7 @@
 
 ### 3-3-1 배치
 
-화면 예시는 [밝은 테마](../screenshot-theme-light.png)와 [어두운 테마](../screenshot-theme-dark.png)다.
+화면 예시는 [밝은 테마](../../landing/assets/screenshot.png)와 [어두운 테마](../screenshot-theme-dark.png)다.
 
 | 영역 | 표현 |
 |---|---|
