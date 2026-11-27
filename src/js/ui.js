@@ -3,9 +3,8 @@
  * @description DOM 요소를 생성, 삽입, 조작하는 UI 관련 함수 모음
  */
 
-// 그래프가 들어갈 컨테이너 생성, 페이지에 주입
-// langName: 비교 언어 이름(없으면 모든 언어), others: 다른 언어 [{ name, href }]
-function injectGraphContainer(dark, langName, others) {
+// 그래프가 들어갈 컨테이너 생성, 페이지에 주입. 카드는 스켈레톤으로 시작
+function injectGraphContainer(dark) {
   let container = document.getElementById("boj-performance-graph-container");
 
   // 초기화
@@ -27,8 +26,6 @@ function injectGraphContainer(dark, langName, others) {
   // 다크 모드 적용
   container.classList.toggle("boj-graph-dark", dark);
 
-  container.appendChild(createLangLine(langName, others));
-
   // 카드 레이아웃 생성
   const chartsRow = document.createElement("div");
   chartsRow.className = "charts-row";
@@ -43,23 +40,7 @@ function injectGraphContainer(dark, langName, others) {
   return { timeCard, memoryCard };
 }
 
-// 비교 언어 줄: "{언어} 기준 · 다른 언어 {링크}, {링크}"
-// 언어 이름은 BOJ 페이지 글자라 textContent로만 넣음
-function createLangLine(langName, others) {
-  const line = document.createElement("div");
-  line.className = "lang-line";
-  line.append(`${langName || "모든 언어"} 기준`);
-  others.forEach((o, i) => {
-    line.append(i === 0 ? " · 다른 언어 " : ", ");
-    const link = document.createElement("a");
-    link.href = o.href;
-    link.textContent = o.name;
-    line.append(link);
-  });
-  return line;
-}
-
-// 개별 카드 요소 생성
+// 개별 카드 요소 생성. 결과가 오기 전까지 스켈레톤(화면 낭독기에는 "분석 중...")
 function createCardElement(title, id) {
   const card = document.createElement("div");
   card.className = "card";
@@ -67,24 +48,21 @@ function createCardElement(title, id) {
   card.innerHTML = `
     <div class="card-header">
         <div class="card-title">${title}</div>
-        <div class="stat-area" aria-live="polite">
-            <div class="card-stat-big">-</div>
-            <div class="card-stat-sub">...</div>
+        <div class="stat-area" aria-live="polite" aria-busy="true">
+            <div class="skeleton skeleton-big" aria-hidden="true"></div>
+            <div class="skeleton skeleton-sub" aria-hidden="true"></div>
+            <span class="visually-hidden">분석 중...</span>
         </div>
     </div>
-    <div class="canvas-wrapper"></div>
+    <div class="canvas-wrapper"><div class="skeleton skeleton-chart" aria-hidden="true"></div></div>
   `;
   return card;
 }
 
-// 카드의 상태를 메시지로 업데이트
-function updateCardLoading(card, msg) {
-  card.querySelector(".stat-area").innerHTML =
-    `<div class="card-stat-sub">${msg}</div>`;
-}
-
 // 카드의 상태를 에러로 업데이트
 function updateCardError(card) {
-  card.querySelector(".stat-area").innerHTML =
-    `<div class="card-stat-sub" style="color:red">데이터 부족</div>`;
+  const statArea = card.querySelector(".stat-area");
+  statArea.removeAttribute("aria-busy");
+  statArea.innerHTML = `<div class="card-stat-sub" style="color:red">데이터 부족</div>`;
+  card.querySelector(".canvas-wrapper").innerHTML = "";
 }

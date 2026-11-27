@@ -10,7 +10,7 @@
 src/
 ├── manifest.json   content script 주입 범위, 권한
 ├── js/             전역 함수 공유. manifest의 js 배열 순서가 곧 의존 순서
-│   ├── utils.js    로그인 ID, 언어명·언어 필터 값, 다크 모드 감지
+│   ├── utils.js    로그인 ID, 언어 필터 값의 언어명, 다크 모드 감지
 │   ├── api.js      /status HTML을 fetch → DOMParser로 크롤링
 │   ├── data.js     내 기록 선택, 분포 구간, 상위 % 계산
 │   ├── ui.js       카드 DOM 생성·삽입
@@ -32,7 +32,7 @@ tests/              계산·표본 저장·노트 처리 순수 함수 테스트
 └── *.test.js
 ```
 
-흐름: `problem_id` 있고 `contest_id` 없는 status 페이지 → 로그인 ID 확인 → 내 정답 제출 첫 페이지 조회 → 비교 언어(필터가 없으면 가장 최근 정답 제출의 언어)와 내 최고 기록 결정 → 카드 삽입 → 정답 제출 최대 10페이지(약 200건) 순차 크롤링 → 차트. 표본은 탭의 `sessionStorage`에 두고 같은 탭에서 다시 열면 새 제출만 받아 붙인다([4-3-2](docs/spec/4-3-STATE-MANAGEMENT.md#4-3-2-세션-저장소)).
+흐름: `problem_id` 있고 `contest_id` 없는 status 페이지 → 로그인 ID 확인 → 내 정답 제출 첫 페이지 조회 → 비교 언어(언어 필터 그대로, 없으면 모든 언어)와 내 최고 기록 결정 → 카드 삽입(스켈레톤) → 정답 제출 최대 10페이지(약 200건) 순차 크롤링 → 차트(다 받은 뒤 한 번). 표본은 탭의 `sessionStorage`에 두고 같은 탭에서 다시 열면 새 제출만 받아 붙인다([4-3-2](docs/spec/4-3-STATE-MANAGEMENT.md#4-3-2-세션-저장소)).
 
 ## BOJ 의존점 (깨지면 여기부터 본다)
 

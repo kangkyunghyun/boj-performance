@@ -9,7 +9,7 @@ function getLoginId() {
   return user ? user.innerText.trim() : null;
 }
 
-// 선택된 언어 이름을 조회
+// 언어 필터 값의 언어 이름. 모든 언어나 못 찾으면 null
 function getLanguageName(langId) {
   if (!langId || langId === "-1") return null;
 
@@ -19,17 +19,6 @@ function getLanguageName(langId) {
   );
   for (const option of options) {
     if (option.value === langId) return option.innerText.trim();
-  }
-  return null;
-}
-
-// 언어 이름에 맞는 언어 필터 값. 없으면 null
-function getLanguageId(name) {
-  const options = document.querySelectorAll(
-    'select[name="language_id"] option',
-  );
-  for (const option of options) {
-    if (option.innerText.trim() === name) return option.value;
   }
   return null;
 }

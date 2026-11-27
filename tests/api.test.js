@@ -10,7 +10,7 @@ test("BOJP-QA-025 sampleCacheKey 문제와 언어", () => {
   assert.equal(sampleCacheKey("1000", "84"), "boj-performance:v1:1000:84");
 });
 
-test("BOJP-QA-034 sampleCacheKey 모든 언어는 빈 값", () => {
+test("BOJP-QA-032 sampleCacheKey 모든 언어는 빈 값", () => {
   assert.equal(sampleCacheKey("1000", ""), "boj-performance:v1:1000:");
   assert.equal(sampleCacheKey("1000", null), "boj-performance:v1:1000:");
 });

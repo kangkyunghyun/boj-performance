@@ -26,10 +26,3 @@
   gap: 20px;
   justify-content: space-between;
 }
-
-/* 비교 언어 줄 (카드 줄 위) */
-.lang-line {
-  font-size: 13px;
-  color: #595959;
-  margin-bottom: 8px;
-}
