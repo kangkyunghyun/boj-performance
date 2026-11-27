@@ -36,7 +36,7 @@ tests/              계산·표본 저장·노트 처리 순수 함수 테스트
 
 ## BOJ 의존점 (깨지면 여기부터 본다)
 
-확장은 BOJ HTML 크롤링에 전적으로 의존한다. "작동 안 함" 제보는 대부분 BOJ 쪽 변경이다. 의존하는 도메인·주소·셀렉터·표 열·헤더 규칙은 [docs/spec/4-1-CONTRACT.md](docs/spec/4-1-CONTRACT.md), 깨졌을 때의 증상은 [4-4-2](docs/spec/4-4-EXECUTION.md#4-4-2-boj-쪽-변경과-증상)에 있다. 진단 절차는 `.claude/skills/boj-diagnose/SKILL.md`.
+확장은 BOJ HTML 크롤링에 전적으로 의존한다. "작동 안 함" 제보는 대부분 BOJ 쪽 변경이다. 의존하는 도메인·주소·셀렉터·표 열은 [docs/spec/4-1-CONTRACT.md](docs/spec/4-1-CONTRACT.md), 깨졌을 때의 증상은 [4-4-2](docs/spec/4-4-EXECUTION.md#4-4-2-boj-쪽-변경과-증상)에 있다. 진단 절차는 `.claude/skills/boj-diagnose/SKILL.md`.
 
 ## 스펙
 
@@ -65,7 +65,7 @@ BOJ 로그인 세션이 필요한 확인은 Aside `--account u1`로 할 수 있�
 
 절차는 `create-release` 스킬.
 
-1. `release/<버전>` 또는 `hotfix/<버전>` 브랜치에서 `src/manifest.json`의 `version`을 올리고 `docs/releases/v<버전>.md` 노트를 쓴다([형식](docs/releases/README.md)). 계속 알릴 기능이 생겼으면 `release-copy` 스킬로 `docs/copy/` 문구의 기능 목록에 더한다. 스토어 설명란에 버전별 변경은 쓰지 않는다.
+1. `release/<버전>` 또는 `hotfix/<버전>` 브랜치에서 `src/manifest.json`의 `version`을 올리고 `docs/releases/v<버전>.md` 노트를 쓴다([형식](docs/releases/README.md)). 계속 알릴 기능이 생겼으면 `release-copy` 스킬로 스토어 설명(`docs/copy/1-1`)의 기능 목록에 더한다. 홍보글은 설명 문장을 바꿀 만큼 클 때만 고친다. 스토어 설명란에 버전별 변경은 쓰지 않는다.
 2. 그 브랜치를 PR로 `main`에 병합하고 병합 커밋에 `v<버전>` 태그를 단다. 이어서 `main`을 `develop`에 되합치는 PR을 병합한다.
 3. 태그 push로 `release.yml`이 태그와 manifest 버전을 맞춰 보고 `boj-performance-v<버전>.zip`을 첨부하고 노트 파일을 본문으로 한 GitHub Release를 만든다. 노트 파일이 없으면 실패한다. 랜딩 업데이트 소식은 이 Release를 읽는다.
 4. Actions에서 `main`을 대상으로 게시 워크플로를 수동 실행한다. 입력은 `version`과 확인 문구다.
