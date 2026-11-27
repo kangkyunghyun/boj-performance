@@ -18,50 +18,19 @@ async function main() {
   if (!myId) return;
 
   // 언어 필터. "-1"은 BOJ 검색 양식의 "모든 언어"라 필터 없음과 같음
+  // 비교 언어는 언어 필터 그대로. 없으면 모든 언어
   const filterLangId = params.get("language_id");
-  const hasFilter = filterLangId && filterLangId !== "-1";
+  const langId = filterLangId && filterLangId !== "-1" ? filterLangId : "";
+  const langName = getLanguageName(langId);
 
   // 내 정답 제출 첫 페이지. 없으면 종료
-  const mine = await fetchMySubmissions(
-    problemId,
-    myId,
-    hasFilter ? filterLangId : "",
-  );
+  const mine = await fetchMySubmissions(problemId, myId, langId);
   if (!mine || mine.length === 0) return;
+  const myRecord = pickBest(mine);
 
-  // 비교 언어: 필터가 있으면 그 언어, 없으면 가장 최근 정답 제출의 언어
-  // 그 언어의 필터 값을 못 찾으면 모든 언어
-  let langId = "";
-  let langName = null;
-  let myRecord;
-  if (hasFilter) {
-    langId = filterLangId;
-    langName = getLanguageName(filterLangId) || mine[0].lang;
-    myRecord = pickBest(mine);
-  } else {
-    const recentLang = mine[0].lang;
-    langId = getLanguageId(recentLang) || "";
-    langName = langId ? recentLang : null;
-    myRecord = pickBest(
-      langId ? mine.filter((s) => s.lang === recentLang) : mine,
-    );
-  }
-
-  // 내가 정답을 낸 다른 언어: 현재 주소에서 언어 필터를 바꾼 주소
-  // 결과 표 페이지 위치(top)는 빼서 BOJ 언어 필터 검색과 같은 결과로
-  const others = [];
-  for (const lang of new Set(mine.map((s) => s.lang))) {
-    const id = getLanguageId(lang);
-    if (!id || id === langId || lang === langName) continue;
-    const url = new URL(location.href);
-    url.searchParams.set("language_id", id);
-    url.searchParams.delete("top");
-    others.push({ name: lang, href: url.href });
-  }
-
-  // UI 초기화 및 주입. 테마는 여기서 한 번 판정
+  // UI 초기화 및 주입(스켈레톤). 테마는 여기서 한 번 판정
   const dark = isDarkMode();
-  const ui = injectGraphContainer(dark, langName, others);
+  const ui = injectGraphContainer(dark);
   if (!ui) return;
   const { timeCard, memoryCard } = ui;
 
@@ -78,53 +47,39 @@ async function main() {
     }
   };
 
-  // 전체 데이터 로드 및 차트 그리기 함수 정의
+  // 표본을 다 받은 뒤 한 번만 그림. 그 전까지는 스켈레톤
   const loadAndDraw = async () => {
     const cacheKey = sampleCacheKey(problemId, langId);
     const cached = loadSampleCache(cacheKey);
 
-    // 저장한 표본으로 먼저 그리고 새 제출만 받아 붙임
+    // 저장한 표본이 있으면 새 제출만 받아 붙임. 실패하면 저장한 표본 그대로
     if (cached) {
-      draw(cached);
       const { rows, complete } = await fetchSolvedData(
         problemId,
         langId,
         cached[0][0],
       );
-      if (!complete || rows.length === 0) return;
+      if (!complete || rows.length === 0) {
+        draw(cached);
+        return;
+      }
       const merged = mergeSamples(rows, cached);
       draw(merged);
       saveSampleCache(cacheKey, merged);
       return;
     }
 
-    updateCardLoading(timeCard, "분석 중...");
-    updateCardLoading(memoryCard, "분석 중...");
-
-    // 첫 페이지를 받으면 바로 그림 (api.js)
-    let shown = 0;
-    const { rows, complete } = await fetchSolvedData(
-      problemId,
-      langId,
-      null,
-      (firstRows) => {
-        if (firstRows.length === 0) return;
-        draw(firstRows);
-        shown = firstRows.length;
-      },
-    );
-
+    const { rows, complete } = await fetchSolvedData(problemId, langId, null);
     if (rows.length === 0) {
       updateCardError(timeCard);
       updateCardError(memoryCard);
       return;
     }
-
-    if (rows.length !== shown) draw(rows);
+    draw(rows);
     if (complete) saveSampleCache(cacheKey, rows);
   };
 
-  // 5. 실행
+  // 실행
   loadAndDraw();
 }
 

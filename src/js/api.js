@@ -7,7 +7,7 @@
 // 행: [제출 번호, 시간, 메모리], 제출 번호 내림차순
 // stopAt이 있으면 그 제출 번호 이하 행을 만날 때 멈춤
 // complete: 요청 예외 없이 끝났는지. 오류 상태(2xx 아님)도 요청 예외
-async function fetchSolvedData(problemId, langId, stopAt, onFirstPage) {
+async function fetchSolvedData(problemId, langId, stopAt) {
   const rows = [];
   let complete = true;
   let baseUrl = `${location.origin}/status?problem_id=${problemId}&result_id=4`;
@@ -43,7 +43,6 @@ async function fetchSolvedData(problemId, langId, stopAt, onFirstPage) {
       if (nextUrl && !nextUrl.startsWith("http")) {
         nextUrl = `${location.origin}${nextUrl}`;
       }
-      if (pageCount === 0 && onFirstPage) onFirstPage(rows.slice());
       pageCount++;
     } catch (e) {
       console.error("데이터 조회 중 에러 발생:", e);
@@ -104,8 +103,8 @@ function mergeSamples(newRows, cachedRows) {
   return newRows.concat(cachedRows).slice(0, 200);
 }
 
-// 내 정답 제출 첫 페이지. 행: { time, memory, lang }, 최신순
-// lang: 언어 셀(7번)의 첫 부분. 요청 예외나 오류 상태면 null
+// 내 정답 제출 첫 페이지. 행: { time, memory }, 최신순
+// 요청 예외나 오류 상태면 null
 async function fetchMySubmissions(problemId, userId, langId) {
   let url = `${location.origin}/status?problem_id=${problemId}&user_id=${userId}&result_id=4`;
   if (langId) url += `&language_id=${langId}`;
@@ -118,13 +117,11 @@ async function fetchMySubmissions(problemId, userId, langId) {
     const subs = [];
     for (const row of doc.querySelectorAll("#status-table tbody tr")) {
       const cols = row.querySelectorAll("td");
-      if (cols.length <= 7) continue;
+      if (cols.length <= 5) continue;
       const memory = parseInt(cols[4].innerText);
       const time = parseInt(cols[5].innerText);
       if (isNaN(memory) || isNaN(time)) continue;
-      // 내 제출은 "C++17 / 수정"
-      const lang = cols[7].textContent.split("/")[0].trim();
-      subs.push({ time, memory, lang });
+      subs.push({ time, memory });
     }
     return subs;
   } catch (e) {
