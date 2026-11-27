@@ -16,7 +16,7 @@ curl -sS -o /dev/null -D - 'https://www.acmicpc.net/status?problem_id=1000' | gr
 
 최종 도착 호스트가 `manifest.json`의 `matches`·`host_permissions`에 없으면 content script가 주입되지 않는다(증상: 카드 자체가 안 보임).
 
-## 2. fetch 차단 우회가 아직 통하는지
+## 2. 페이지 안 조회(cors)가 막혔는지
 
 ```bash
 UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140 Safari/537.36'
@@ -25,9 +25,9 @@ curl -s -A "$UA" -H 'Sec-Fetch-Mode: cors' -H 'Sec-Fetch-Dest: empty' -H 'Sec-Fe
 curl -s -A "$UA" -H 'Sec-Fetch-Mode: navigate' -H 'Sec-Fetch-Dest: document' -H 'Sec-Fetch-Site: same-origin' -H 'Sec-Fetch-User: ?1' "$U" | wc -c
 ```
 
-- cors 0바이트, navigate 수만 바이트 → 차단 방식 그대로. `rules.json` 우회가 유효하다.
-- 둘 다 정상 → 차단이 풀렸다. `rules.json`은 그대로 둬도 무해하다.
-- navigate도 0바이트·에러 → 차단 방식이 바뀌었다. 응답 헤더와 본문을 보고 새 우회 방법을 찾는다.
+- 둘 다 수만 바이트 → 정상. 확장은 요청 헤더를 바꾸지 않는다(D-023).
+- cors 0바이트, navigate 수만 바이트 → BOJ가 페이지 안 조회를 다시 막았다. D-009의 `rules.json` 규칙을 되돌릴지 사용자와 정한다.
+- navigate도 0바이트·에러 → 차단 방식이 바뀌었다. 응답 헤더와 본문을 보고 원인을 찾는다.
 
 ## 3. DOM 구조
 
@@ -50,7 +50,7 @@ aside repl --account u1 'await openTab("https://acmicpc.net/status?problem_id=10
 
 `null`이면 로그아웃 상태이거나 셀렉터가 바뀐 것이다. `.loginbar` outerHTML을 출력해 구분한다.
 
-페이지 컨텍스트에서 `fetch("/status?...")`를 직접 호출하면 확장의 헤더 규칙이 적용되지 않아 빈 본문이 정상이다. 확장 동작 확인으로 오해하지 않는다.
+페이지 컨텍스트에서 `fetch("/status?...")`를 직접 호출하면 확장의 조회와 같은 요청이 된다. 결과 표 행이 0개면 2번의 cors 차단을 의심한다.
 
 ## 5. 수정 후
 

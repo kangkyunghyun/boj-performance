@@ -22,7 +22,6 @@ flowchart LR
 결과 문구와 막대 그래프`"]
         P["`**페이지 읽기**
 로그인 아이디, 언어, 테마`"]
-        R["`**요청 헤더 규칙**`"]
     end
     B["`**BOJ**
 채점 현황 페이지`"]
@@ -36,11 +35,10 @@ flowchart LR
     E --> G
     G --> L
     Q -->|조회| B
-    R -.->|헤더 변경| B
     P -.->|읽기| X
     classDef comp fill:#E8F2E8,stroke:#527A59,color:#182D1D
     classDef ext fill:#F4F6F4,stroke:#9BA99E,color:#253C2C
-    class E,Q,C,K,G,P,R comp
+    class E,Q,C,K,G,P comp
     class B,X,L ext
     style EXT fill:#FAFAFA,stroke:#AAAAAA
 ```
@@ -53,7 +51,6 @@ flowchart LR
 | 계산 | 내 기록 고르기<br>지표별 분포 구간과 내 값이 든 막대, 상위 비율 | 요청, 화면 요소 접근 |
 | 카드 | 성능 카드 묶음 생성과 끼워 넣기<br>비교 언어 줄<br>테마 색 적용<br>분석 중, 데이터 부족 문구와 그 상태 알림 영역 | 결과 문구, 그래프, 테마 판정 |
 | 그래프 | 결과 문구와 안내 툴팁<br>안내 아이콘과 그래프의 접근 가능한 이름, Esc 키로 안내 닫기<br>막대 색 결정과 그래프 그리기, 막대 툴팁 문구<br>같은 지표의 이전 그래프 파기 | 요청, 계산, 테마 판정 |
-| 요청 헤더 규칙 | 브라우저가 BOJ 조회 요청의 `Sec-Fetch-*` 헤더를 바꾸게 하는 선언형 규칙 | 응답 변경 |
 | 차트 라이브러리 | 확장에 함께 묶은 외부 코드<br>막대 그래프 렌더링과 막대 툴팁 | 확장에 맞춘 수정 |
 
 <br>
