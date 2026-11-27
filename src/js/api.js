@@ -6,7 +6,7 @@
 // 정답 제출 표본을 첫 페이지부터 최대 10페이지 조회
 // 행: [제출 번호, 시간, 메모리], 제출 번호 내림차순
 // stopAt이 있으면 그 제출 번호 이하 행을 만날 때 멈춤
-// complete: 요청 예외 없이 끝났는지
+// complete: 요청 예외 없이 끝났는지. 오류 상태(2xx 아님)도 요청 예외
 async function fetchSolvedData(problemId, langId, stopAt, onFirstPage) {
   const rows = [];
   let complete = true;
@@ -19,6 +19,7 @@ async function fetchSolvedData(problemId, langId, stopAt, onFirstPage) {
   while (nextUrl && pageCount < 10) {
     try {
       const res = await fetch(nextUrl);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const text = await res.text();
       const doc = new DOMParser().parseFromString(text, "text/html");
 
@@ -104,13 +105,14 @@ function mergeSamples(newRows, cachedRows) {
 }
 
 // 내 정답 제출 첫 페이지. 행: { time, memory, lang }, 최신순
-// lang: 언어 셀(7번)의 첫 부분. 요청 예외면 null
+// lang: 언어 셀(7번)의 첫 부분. 요청 예외나 오류 상태면 null
 async function fetchMySubmissions(problemId, userId, langId) {
   let url = `${location.origin}/status?problem_id=${problemId}&user_id=${userId}&result_id=4`;
   if (langId) url += `&language_id=${langId}`;
 
   try {
     const res = await fetch(url);
+    if (!res.ok) return null;
     const text = await res.text();
     const doc = new DOMParser().parseFromString(text, "text/html");
     const subs = [];

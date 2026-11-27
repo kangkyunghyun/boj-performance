@@ -72,3 +72,58 @@ test("BOJP-QA-030 saveSampleCache 용량 초과여도 예외 없음", () => {
   const api = load({ sessionStorage });
   assert.doesNotThrow(() => api.saveSampleCache("k", rows([1])));
 });
+
+// fetch 응답과 DOMParser 결과를 흉내 냄. 행: [제출 번호, 메모리, 시간, 언어]
+function fakeBoj(pages) {
+  let i = 0;
+  const fetch = async () => {
+    const p = pages[i++];
+    return { ok: p.status === 200, status: p.status, text: async () => i - 1 };
+  };
+  const cell = (v) => ({ innerText: String(v), textContent: String(v) });
+  const DOMParser = class {
+    parseFromString(n) {
+      const p = pages[n];
+      return {
+        querySelectorAll: () =>
+          p.rows.map(([id, mem, time, lang]) => ({
+            querySelectorAll: () =>
+              [id, "u", "p", "r", mem, time, "s", lang].map(cell),
+          })),
+        querySelector: () =>
+          p.next ? { getAttribute: () => `/status?top=${p.next}` } : null,
+      };
+    }
+  };
+  return { fetch, DOMParser, location: { origin: "https://acmicpc.net" } };
+}
+
+test("BOJP-QA-047 fetchSolvedData 오류 상태면 그 전 행만, 완료 아님", async () => {
+  const api = load(
+    fakeBoj([
+      { status: 200, rows: [[30, 2020, 4, "C++17"]], next: 29 },
+      { status: 403, rows: [] },
+    ]),
+  );
+  api.console = { error: () => {} };
+  const { rows, complete } = await api.fetchSolvedData("1000", "", null);
+  assert.deepEqual(rows, [[30, 4, 2020]]);
+  assert.equal(complete, false);
+});
+
+test("fetchSolvedData 정상 응답은 다음 페이지까지 읽고 완료", async () => {
+  const api = load(
+    fakeBoj([
+      { status: 200, rows: [[30, 2020, 4, "C++17"]], next: 29 },
+      { status: 200, rows: [[20, 2024, 8, "C++17"]] },
+    ]),
+  );
+  const { rows, complete } = await api.fetchSolvedData("1000", "", null);
+  assert.deepEqual(rows, [[30, 4, 2020], [20, 8, 2024]]);
+  assert.equal(complete, true);
+});
+
+test("fetchMySubmissions 오류 상태면 null", async () => {
+  const api = load(fakeBoj([{ status: 403, rows: [[30, 2020, 4, "C++17"]] }]));
+  assert.equal(await api.fetchMySubmissions("1000", "me", ""), null);
+});

@@ -13,10 +13,12 @@ function getLoginId() {
 function getLanguageName(langId) {
   if (!langId || langId === "-1") return null;
 
-  const selectBox = document.querySelector('select[name="language_id"]');
-  if (selectBox) {
-    const option = selectBox.querySelector(`option[value="${langId}"]`);
-    if (option) return option.innerText.trim();
+  // 주소에서 온 값이라 선택자에 넣지 않고 비교만 함
+  const options = document.querySelectorAll(
+    'select[name="language_id"] option',
+  );
+  for (const option of options) {
+    if (option.value === langId) return option.innerText.trim();
   }
   return null;
 }
