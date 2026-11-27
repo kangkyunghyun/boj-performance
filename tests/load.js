@@ -22,11 +22,12 @@ function load(globals = {}) {
     });
   }
   // 결과는 다른 realm의 객체라 deepStrictEqual이 프로토타입 차이로 실패한다. 복사해서 돌려준다
+  // async 함수는 Promise를 돌려주므로 풀린 값을 복사한다
+  const copy = (r) =>
+    typeof r?.then === "function" ? r.then(structuredClone) : structuredClone(r);
   return new Proxy(ctx, {
     get: (t, k) =>
-      typeof t[k] === "function"
-        ? (...a) => structuredClone(t[k](...a))
-        : t[k],
+      typeof t[k] === "function" ? (...a) => copy(t[k](...a)) : t[k],
   });
 }
 

@@ -41,14 +41,13 @@
 
 | 명세 | 코드 |
 |---|---|
-| 4-2 진입, 2-2-3 비교 언어와 다른 언어 링크 | [`src/js/main.js`](../../src/js/main.js) |
-| 4-2 페이지 읽기, 4-1-1 언어 이름과 언어 필터 값, 4-1-5 테마 설정 | [`src/js/utils.js`](../../src/js/utils.js) |
+| 4-2 진입, 2-2-3 비교 언어 | [`src/js/main.js`](../../src/js/main.js) |
+| 4-2 페이지 읽기, 4-1-1 언어 이름, 4-1-5 테마 설정 | [`src/js/utils.js`](../../src/js/utils.js) |
 | 4-2 BOJ 조회, 4-1-1 요청 주소, 4-1-4 결과 표 읽기, 4-3-2 세션 저장소 | [`src/js/api.js`](../../src/js/api.js) |
 | 4-2 계산, 2-2-2 내 기록, 분포 구간, 상위 비율 | [`src/js/data.js`](../../src/js/data.js) |
-| 4-2 카드, 4-1-1 끼워 넣을 자리, 3-3-2 분석 중과 데이터 부족, 3-3-3 비교 언어 줄, 3-3-6 상태 알림 영역 | [`src/js/ui.js`](../../src/js/ui.js) |
+| 4-2 카드, 4-1-1 끼워 넣을 자리, 3-3-2 스켈레톤(분석 중)과 데이터 부족, 3-3-6 상태 알림 영역 | [`src/js/ui.js`](../../src/js/ui.js) |
 | 4-2 그래프, 3-3-3 툴팁 문구, 3-3-4 그래프, 3-3-5 막대와 축 색, 3-3-6 안내 아이콘과 그래프 이름 | [`src/js/graph.js`](../../src/js/graph.js) |
 | 4-2 차트 라이브러리 | [`src/js/libs/chart.js`](../../src/js/libs/chart.js). Chart.js v4.4.1 번들, 수정하지 않음 |
-| 4-2 요청 헤더 규칙, 4-1-3 요청 헤더 | [`src/rules.json`](../../src/rules.json) |
 | 4-1-2 도메인과 권한, 4-1-6 외부 링크, 4-2-2 의존 순서, 6-1 버전, 6-2 Firefox 조건 | [`src/manifest.json`](../../src/manifest.json)의 `content_scripts`(`matches`, `js` 배열 순서), `host_permissions`, `permissions`, `homepage_url`, `version`, `browser_specific_settings` |
 | 6-1 패키지와 제출 방법 | [`.github/workflows/`](../../.github/workflows/)의 `release.yml`, `publish-chrome.yml`, `publish-firefox.yml`, [`scripts/`](../../scripts/) |
 | 6-1 릴리스 노트 | [`docs/releases/`](../releases/)의 `v<버전>.md`, 형식은 [`docs/releases/README.md`](../releases/README.md) |

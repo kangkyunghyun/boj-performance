@@ -11,6 +11,7 @@ let chartInstances = { time: null, memory: null };
 // langName: 비교 언어 이름(없으면 모든 언어). 그래프 이름에만 씀
 function drawChart(card, chartData, type, stats, dark, langName) {
   const statArea = card.querySelector(".stat-area");
+  statArea.removeAttribute("aria-busy");
   const unit = type === "time" ? "ms" : "KB";
   const metric = type === "time" ? "실행 시간" : "메모리";
 
