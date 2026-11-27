@@ -5,23 +5,12 @@
 
 // 그래프가 들어갈 컨테이너 생성, 페이지에 주입. 카드는 스켈레톤으로 시작
 function injectGraphContainer(dark) {
-  let container = document.getElementById("boj-performance-graph-container");
-
-  // 초기화
-  if (container) {
-    container.innerHTML = "";
-  } else {
-    container = document.createElement("div");
-    container.id = "boj-performance-graph-container";
-
-    // 테이블 위에 삽입
-    const target = document.querySelector(".table-responsive");
-    if (target) {
-      target.parentNode.insertBefore(container, target);
-    } else {
-      return null;
-    }
-  }
+  // 테이블 위에 삽입. 자리가 없으면 넣지 않음
+  const target = document.querySelector(".table-responsive");
+  if (!target) return null;
+  const container = document.createElement("div");
+  container.id = "boj-performance-graph-container";
+  target.parentNode.insertBefore(container, target);
 
   // 다크 모드 적용
   container.classList.toggle("boj-graph-dark", dark);

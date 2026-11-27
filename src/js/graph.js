@@ -3,9 +3,6 @@
  * @description Chart.js 라이브러리를 이용하여 차트를 렌더링하는 함수
  */
 
-// 차트 인스턴스를 저장하여 재사용/삭제 시 활용
-let chartInstances = { time: null, memory: null };
-
 // 그래프 그리는 함수
 // chartData: processData 결과, dark: 카드를 끼울 때 판정한 테마
 // langName: 비교 언어 이름(없으면 모든 언어). 그래프 이름에만 씀
@@ -63,13 +60,8 @@ function drawChart(card, chartData, type, stats, dark, langName) {
     isMine(i) ? myColor : barColor,
   );
 
-  // 기존 차트 파괴
-  if (chartInstances[type]) {
-    chartInstances[type].destroy();
-  }
-
-  // 새 차트 생성
-  chartInstances[type] = new Chart(ctx, {
+  // 차트 생성. 페이지마다 한 번만 그림
+  new Chart(ctx, {
     type: "bar",
     data: {
       labels: chartData.labels,
