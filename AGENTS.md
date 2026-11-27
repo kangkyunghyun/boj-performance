@@ -9,7 +9,6 @@
 ```
 src/
 ├── manifest.json   content script 주입 범위, 권한
-├── rules.json      declarativeNetRequest: /status 요청의 Sec-Fetch-* 헤더를 navigate로 위조
 ├── js/             전역 함수 공유. manifest의 js 배열 순서가 곧 의존 순서
 │   ├── utils.js    로그인 ID, 언어명·언어 필터 값, 다크 모드 감지
 │   ├── api.js      /status HTML을 fetch → DOMParser로 크롤링

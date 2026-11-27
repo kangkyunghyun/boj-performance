@@ -32,24 +32,15 @@ BOJ는 공개 API를 제공하지 않는다. BOJ Performance는 채점 현황 �
 | `www` 호스트 | `www.acmicpc.net`<br>BOJ가 301 응답으로 `acmicpc.net`에 보냄 |
 | 확장을 넣는 페이지 | `https://acmicpc.net/status*`<br>`https://www.acmicpc.net/status*` |
 | `host_permissions` | `https://acmicpc.net/*`<br>`https://www.acmicpc.net/*` |
-| `permissions` | `declarativeNetRequest` |
-
-요청 헤더 변경은 요청 호스트가 `host_permissions`에 있어야 적용된다.
+| `permissions` | 없음 |
 
 <br>
 
 ### 4-1-3 요청 헤더
 
-BOJ는 `Sec-Fetch-Mode: cors` 요청에 상태 200과 빈 본문을 준다. `Sec-Fetch-Mode: navigate` 요청에는 정상 HTML을 준다. 페이지 안에서 보내는 조회는 브라우저가 `cors`로 표시하므로 확장의 선언형 요청 규칙이 헤더를 바꾼다.
+확장은 요청 헤더를 바꾸지 않는다. 페이지 안에서 보내는 조회는 브라우저가 `Sec-Fetch-Mode: cors`로 표시하고, BOJ는 이 요청에 결과 표가 든 HTML을 준다.
 
-| 항목 | 값 |
-|---|---|
-| 적용 주소 | `||acmicpc.net/status`<br>`acmicpc.net`과 하위 도메인의 `/status`로 시작하는 주소 |
-| 적용 요청 종류 | `xmlhttprequest`, `sub_frame` |
-| `Sec-Fetch-Mode` | `navigate` |
-| `Sec-Fetch-Dest` | `document` |
-| `Sec-Fetch-Site` | `same-origin` |
-| `Sec-Fetch-User` | `?1` |
+BOJ가 `cors` 요청에 상태 200과 빈 본문을 주던 시기에는 선언형 요청 규칙으로 헤더를 페이지 이동 요청 값으로 바꿨다([D-009](DECISIONS.md#d-009)). 재오픈 뒤 이 차단이 없어져 규칙을 지웠다([D-023](DECISIONS.md#d-023)).
 
 <br>
 
