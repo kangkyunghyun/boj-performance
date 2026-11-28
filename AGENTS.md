@@ -98,7 +98,8 @@ git flow를 쓴다.
 | `hotfix/<버전>` | `main` | `main` | merge commit | 배포본 긴급 수정(예: BOJ 쪽 변경 대응). 버전 올림 포함 |
 | `main` 되합치기 | | `develop` | merge commit | release·hotfix를 `main`에 병합한 뒤 `develop`에 반영 |
 
-- 작업은 GitHub 이슈부터 연다. 브랜치 이름과 PR 제목에 이슈 번호를 적고 PR 본문에 `Close #번호`를 넣는다.
+- `main`, `develop`은 저장소 규칙(Settings → Rules)으로 보호한다. PR로만 병합하고 `test`(Validation)와 `gitleaks`(Security)가 통과해야 한다. 강제 push와 삭제는 막혀 있다.
+- 작업은 GitHub 이슈부터 연다. 브랜치 이름과 PR 제목에 이슈 번호를 적고 PR 본문에 `Close #번호`를 넣는다. Dependabot의 액션 업데이트 PR(`dependabot/...` 브랜치)은 예외로, 이슈 없이 검토 뒤 squash 병합한다.
 - 태그 `v<버전>`은 release·hotfix가 `main`에 병합된 커밋에 단다. 버전은 release·hotfix 브랜치에서만 올린다.
 - PR은 Draft로 열고 `.github/pull_request_template.md`를 채운다.
 - 브랜치를 만들기 전에 `git fetch`로 기준 브랜치를 최신으로 맞춘다.
@@ -134,6 +135,7 @@ git flow를 쓴다.
 | `.github/workflows/release.yml` | 태그와 manifest 버전 일치, zip, 노트 파일 본문의 GitHub Release | `v*.*.*` 태그 push | 버전이 다르거나 노트 파일이 없으면 실패 |
 | `.github/workflows/publish-chrome.yml` | `main`, 확인 문구, 태그가 `main` 최신 커밋인지 확인 뒤 Chrome Web Store 업로드·게시 | 수동 | 심사 요청까지. 공개는 심사 뒤 |
 | `.github/workflows/publish-firefox.yml` | 같은 확인 뒤 AMO 업로드·검증 대기·버전 생성. 노트는 Internal을 뺀 `docs/releases/v<버전>.md` | 수동 | 심사 요청까지. 공개는 심사 뒤 |
+| `.github/dependabot.yml` | 워크플로가 고정한 GitHub Actions SHA 업데이트 | 주 1회, `develop` 대상 PR 하나로 묶음 | 사람이 검토 뒤 병합 |
 | `.github/workflows/pages.yml` | `landing/`을 GitHub Pages에 배포 | `main` push 중 `landing/**`·`pages.yml` 변경, 수동(`main`만. `github-pages` 환경이 `main`만 허용) | 배포 실패하면 실패 |
 
-빌드 CI는 없다.
+빌드 CI는 없다. 저장소 설정에서 액션 SHA 고정을 강제한다(태그로 쓰면 워크플로가 실행되지 않는다).
